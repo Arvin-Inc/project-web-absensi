@@ -31,13 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
 // Handle self-attendance with selfie upload
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
     $status = $_POST['status'];
+    $message = isset($_POST['message']) ? $_POST['message'] : null;
     if ($status === 'Hadir') {
         if (isset($_FILES['selfie']) && $_FILES['selfie']['error'] === UPLOAD_ERR_OK) {
             $validation = validate_image($_FILES['selfie']);
             if ($validation === true) {
                 $selfie_path = upload_selfie($_FILES['selfie'], $user_id);
                 if ($selfie_path) {
-                    if (mark_attendance($user_id, $status, $selfie_path)) {
+                    if (mark_attendance($user_id, $status, $selfie_path, $message)) {
                         $attendance_success = "Absensi berhasil dicatat dengan selfie.";
                     } else {
                         $attendance_error = "Gagal mencatat absensi.";
@@ -53,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
         }
     } else {
         // For other statuses, no selfie required
-        if (mark_attendance($user_id, $status)) {
+        if (mark_attendance($user_id, $status, null, $message)) {
             $attendance_success = "Absensi berhasil dicatat.";
         } else {
             $attendance_error = "Gagal mencatat absensi.";
@@ -127,18 +128,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                 <form method="POST" enctype="multipart/form-data">
                     <div class="mb-4">
                         <label for="status" class="block text-sm font-medium text-gray-700">Status Absensi</label>
-                        <select id="status" name="status" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
-                            <option value="Hadir">Hadir</option>
-                            <option value="Izin">Izin</option>
-                            <option value="Sakit">Sakit</option>
-                            <option value="Alpha">Alpha</option>
-                        </select>
-                    </div>
-                    <div class="mb-4" id="selfie-field" style="display: none;">
-                        <label for="selfie" class="block text-sm font-medium text-gray-700">Upload Selfie</label>
-                        <input type="file" id="selfie" name="selfie" accept="image/*" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" />
-                        <img id="selfie-preview" src="#" alt="Preview Selfie" class="mt-2 max-w-xs hidden" />
-                    </div>
+                    <select id="status" name="status" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                        <option value="Hadir">Hadir</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Alpha">Alpha</option>
+                    </select>
+                </div>
+                <div class="mb-4" id="message-field" style="display: none;">
+                    <label for="message" class="block text-sm font-medium text-gray-700">Pesan (Izin/Sakit)</label>
+                    <textarea id="message" name="message" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" placeholder="Masukkan pesan izin atau sakit"></textarea>
+                </div>
+                <div class="mb-4" id="selfie-field" style="display: none;">
+                    <label for="selfie" class="block text-sm font-medium text-gray-700">Upload Selfie</label>
+                    <input type="file" id="selfie" name="selfie" accept="image/*" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" />
+                    <img id="selfie-preview" src="#" alt="Preview Selfie" class="mt-2 max-w-xs hidden" />
+                </div>
                     <button type="submit" name="self_attendance" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
                         Catat Absensi
                     </button>
@@ -151,6 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pesan</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selfie</th>
                         </tr>
                     </thead>
@@ -159,8 +165,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo date('d-m-Y', strtotime($report['tanggal'])); ?></td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        <?php 
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        <?php
                                         switch($report['status']) {
                                             case 'Hadir': echo 'bg-green-100 text-green-800'; break;
                                             case 'Izin': echo 'bg-yellow-100 text-yellow-800'; break;
@@ -170,6 +176,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                                         ?>">
                                         <?php echo $report['status']; ?>
                                     </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <?php echo htmlspecialchars($report['message'] ?? ''); ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <?php if ($report['selfie']): ?>
@@ -239,15 +248,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
             event.target.classList.add('bg-primary', 'text-white');
         }
 
-        // Show/hide selfie field based on status
+        // Show/hide selfie and message fields based on status
         document.getElementById('status').addEventListener('change', function() {
             const selfieField = document.getElementById('selfie-field');
+            const messageField = document.getElementById('message-field');
             if (this.value === 'Hadir') {
                 selfieField.style.display = 'block';
                 document.getElementById('selfie').required = true;
+                messageField.style.display = 'none';
+            } else if (this.value === 'Izin' || this.value === 'Sakit') {
+                selfieField.style.display = 'none';
+                document.getElementById('selfie').required = false;
+                messageField.style.display = 'block';
             } else {
                 selfieField.style.display = 'none';
                 document.getElementById('selfie').required = false;
+                messageField.style.display = 'none';
             }
         });
 

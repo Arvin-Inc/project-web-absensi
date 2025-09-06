@@ -14,11 +14,23 @@ function get_students() {
     return $students;
 }
 
-function get_attendance_today() {
+function get_attendance_today($kelas_id = null) {
     global $conn;
     $today = date('Y-m-d');
-    $stmt = $conn->prepare("SELECT a.*, u.nama FROM absensi a JOIN users u ON a.user_id = u.id WHERE a.tanggal = ? ORDER BY u.nama");
-    $stmt->bind_param("s", $today);
+    $query = "SELECT a.*, u.nama FROM absensi a JOIN users u ON a.user_id = u.id WHERE a.tanggal = ?";
+    $params = [$today];
+    $types = "s";
+
+    if ($kelas_id) {
+        $query .= " AND u.kelas_id = ?";
+        $params[] = $kelas_id;
+        $types .= "i";
+    }
+
+    $query .= " ORDER BY u.nama";
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$params);
     $stmt->execute();
     $result = $stmt->get_result();
     $attendance = [];
@@ -75,6 +87,38 @@ function get_attendance_report($user_id = null, $start_date = null, $end_date = 
     return $reports;
 }
 
+function get_izin_messages($kelas_id = null) {
+    global $conn;
+    $query = "SELECT u.nama, a.tanggal, a.message 
+              FROM absensi a 
+              JOIN users u ON a.user_id = u.id 
+              WHERE a.status = 'Izin'";
+
+    $params = [];
+    $types = "";
+
+    if ($kelas_id) {
+        $query .= " AND u.kelas_id = ?";
+        $params[] = $kelas_id;
+        $types .= "i";
+    }
+
+    $query .= " ORDER BY a.tanggal DESC";
+
+    $stmt = $conn->prepare($query);
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $messages = [];
+    while ($row = $result->fetch_assoc()) {
+        $messages[] = $row;
+    }
+    $stmt->close();
+    return $messages;
+}
+
 function get_classes() {
     global $conn;
     $stmt = $conn->prepare("SELECT * FROM kelas ORDER BY nama");
@@ -86,6 +130,15 @@ function get_classes() {
     }
     $stmt->close();
     return $classes;
+}
+
+function add_class($nama) {
+    global $conn;
+    $stmt = $conn->prepare("INSERT INTO kelas (nama) VALUES (?)");
+    $stmt->bind_param("s", $nama);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
 }
 
 
@@ -150,7 +203,7 @@ function verify_code($input_code) {
     return $today_code && strtoupper($input_code) === $today_code;
 }
 
-function mark_attendance($user_id, $status, $selfie_path = null) {
+function mark_attendance($user_id, $status, $selfie_path = null, $message = null) {
     global $conn;
     $today = date('Y-m-d');
 
@@ -165,12 +218,12 @@ function mark_attendance($user_id, $status, $selfie_path = null) {
     $stmt->execute();
     if ($stmt->get_result()->num_rows > 0) {
         // Update existing
-        $stmt = $conn->prepare("UPDATE absensi SET status = ?, selfie = ? WHERE user_id = ? AND tanggal = ?");
-        $stmt->bind_param("ssis", $status, $selfie_path, $user_id, $today);
+        $stmt = $conn->prepare("UPDATE absensi SET status = ?, selfie = ?, message = ? WHERE user_id = ? AND tanggal = ?");
+        $stmt->bind_param("sssis", $status, $selfie_path, $message, $user_id, $today);
     } else {
         // Insert new
-        $stmt = $conn->prepare("INSERT INTO absensi (user_id, tanggal, status, selfie) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isss", $user_id, $today, $status, $selfie_path);
+        $stmt = $conn->prepare("INSERT INTO absensi (user_id, tanggal, status, selfie, message) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("issss", $user_id, $today, $status, $selfie_path, $message);
     }
     $result = $stmt->execute();
     $stmt->close();

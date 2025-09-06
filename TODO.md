@@ -1,9 +1,16 @@
-# TODO: Implementasi Sistem Absensi dengan Selfie
+# Attendance System Updates TODO
 
-## Langkah-langkah:
-1. [x] Update database.sql: Tambahkan kolom selfie ke tabel absensi
-2. [x] Update includes/functions.php: Modifikasi mark_attendance untuk handle upload selfie, tambahkan validasi gambar
-3. [x] Update public/dashboard_siswa.php: Ganti input kode dengan capture kamera dan upload selfie
-4. [x] Update public/dashboard_guru.php: Tambahkan view selfie di tab attendance
-5. [x] Create assets/uploads folder untuk menyimpan selfie
-6. [x] Test sistem absensi selfie baru
+## Database Functions
+- [x] Add add_class function to includes/functions.php
+
+## Admin Dashboard Updates
+- [x] Add form to add new classes in public/dashboard_admin.php
+
+## Teacher Dashboard Updates
+- [x] Add class filter to attendance tab in public/dashboard_guru.php
+- [x] Add modal for photo viewing in selfie tab in public/dashboard_guru.php
+
+## Testing
+- [ ] Test adding new classes in admin dashboard
+- [ ] Test class filtering in teacher attendance view
+- [ ] Test photo modal functionality

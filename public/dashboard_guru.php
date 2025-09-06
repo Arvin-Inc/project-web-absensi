@@ -9,7 +9,9 @@ if (!is_logged_in() || $_SESSION['user_role'] != 'guru') {
 }
 
 $students = get_students();
-$attendance_today = get_attendance_today();
+$classes = get_classes();
+$selected_kelas_id = $_GET['kelas_id'] ?? null;
+$attendance_today = get_attendance_today($selected_kelas_id);
 
 $generated_code = null;
 $guru_id = $_SESSION['user_id'];
@@ -73,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                 <button onclick="showTab('students')" class="tab-button bg-primary text-white px-4 py-2 rounded-md">Daftar Siswa</button>
                 <button onclick="showTab('attendance')" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Absensi Hari Ini</button>
                 <button onclick="showTab('selfie')" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Selfie</button>
+                <button onclick="showTab('izin')" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Pesan Izin</button>
                 <button onclick="showTab('reports')" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Laporan</button>
             </nav>
         </div>
@@ -109,6 +112,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
         <!-- Attendance Tab -->
         <div id="attendance-tab" class="tab-content hidden">
             <h2 class="text-2xl font-bold mb-4">Absensi Hari Ini (<?php echo date('d-m-Y'); ?>)</h2>
+            <form method="GET" class="mb-4">
+                <label for="kelas_id" class="block mb-2 font-medium text-gray-700">Filter berdasarkan Kelas:</label>
+                <select id="kelas_id" name="kelas_id" class="border border-gray-300 rounded px-3 py-2 w-64" onchange="this.form.submit()">
+                    <option value="">-- Semua Kelas --</option>
+                    <?php foreach ($classes as $kelas): ?>
+                        <option value="<?php echo $kelas['id']; ?>" <?php if ($kelas['id'] == $selected_kelas_id) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($kelas['nama']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
             <div class="bg-white shadow overflow-hidden sm:rounded-md">
                 <ul class="divide-y divide-gray-200">
                     <?php foreach ($attendance_today as $record): ?>
@@ -150,6 +164,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                     <?php endforeach; ?>
                     <?php if (empty($attendance_today) || !array_filter($attendance_today, fn($r) => $r['selfie'])): ?>
                         <li class="col-span-4 text-center text-gray-500">Belum ada selfie hari ini.</li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Izin Messages Tab -->
+        <div id="izin-tab" class="tab-content hidden">
+            <h2 class="text-2xl font-bold mb-4">Pesan Izin Siswa</h2>
+            <div class="bg-white shadow overflow-hidden sm:rounded-md p-6">
+                <ul class="divide-y divide-gray-200">
+                    <?php
+                    $izin_messages = get_izin_messages($selected_kelas_id);
+                    if (!empty($izin_messages)):
+                        foreach ($izin_messages as $msg):
+                    ?>
+                        <li class="px-6 py-4">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900"><?php echo htmlspecialchars($msg['nama']); ?></h3>
+                                <p class="text-gray-500"><strong>Tanggal:</strong> <?php echo date('d-m-Y', strtotime($msg['tanggal'])); ?></p>
+                                <p class="text-gray-700 mt-2"><?php echo nl2br(htmlspecialchars($msg['message'])); ?></p>
+                            </div>
+                        </li>
+                    <?php
+                        endforeach;
+                    else:
+                    ?>
+                        <li class="px-6 py-4 text-center text-gray-500">Belum ada pesan izin.</li>
                     <?php endif; ?>
                 </ul>
             </div>
@@ -201,6 +242,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
         </div>
     </div>
 
+    <!-- Modal for Photo Viewing -->
+    <div id="photoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <img id="modalImage" src="" alt="Photo" class="w-full h-auto rounded" />
+                <h3 id="modalTitle" class="text-lg font-medium text-gray-900 mt-4"></h3>
+                <button onclick="closeModal()" class="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function showTab(tabName) {
             // Hide all tabs
@@ -215,6 +267,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
             // Add active class to clicked button
             event.target.classList.remove('bg-gray-200', 'text-gray-700');
             event.target.classList.add('bg-primary', 'text-white');
+        }
+
+        function openModal(src, name) {
+            document.getElementById('modalImage').src = src;
+            document.getElementById('modalTitle').textContent = 'Selfie ' + name;
+            document.getElementById('photoModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('photoModal').classList.add('hidden');
         }
     </script>
 </body>

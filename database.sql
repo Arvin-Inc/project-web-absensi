@@ -25,6 +25,7 @@ CREATE TABLE absensi (
     user_id INT NOT NULL,
     tanggal DATE NOT NULL,
     status ENUM('Hadir', 'Izin', 'Sakit', 'Alpha') NOT NULL,
+    message VARCHAR(255) DEFAULT NULL,
     selfie VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

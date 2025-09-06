@@ -10,6 +10,16 @@ if (!is_logged_in() || $_SESSION['user_role'] != 'guru') {
 
 $classes = get_classes();
 
+// Handle add class
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_class'])) {
+    $class_name = trim($_POST['class_name']);
+    if (!empty($class_name)) {
+        add_class($class_name);
+        header("Location: dashboard_admin.php");
+        exit();
+    }
+}
+
 $selected_class_id = $_GET['kelas_id'] ?? null;
 $attendance_report = [];
 if ($selected_class_id) {
@@ -53,6 +63,13 @@ if ($selected_class_id) {
     </nav>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h2 class="text-2xl font-bold mb-4">Tambah Kelas Baru</h2>
+        <form method="POST" class="mb-8">
+            <label for="class_name" class="block mb-2 font-medium text-gray-700">Nama Kelas:</label>
+            <input type="text" id="class_name" name="class_name" class="border border-gray-300 rounded px-3 py-2 w-64" required>
+            <button type="submit" name="add_class" class="ml-4 bg-secondary text-white px-4 py-2 rounded hover:bg-green-700">Tambah Kelas</button>
+        </form>
+
         <h2 class="text-2xl font-bold mb-4">Lihat Data Absensi per Kelas</h2>
         <form method="GET" class="mb-6">
             <label for="kelas_id" class="block mb-2 font-medium text-gray-700">Pilih Kelas:</label>

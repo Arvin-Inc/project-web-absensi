@@ -39,7 +39,7 @@ function login($email, $password) {
     return ['success' => false, 'errors' => $errors];
 }
 
-function register($nama, $email, $password, $role) {
+function register($nama, $email, $password, $role, $kelas_id = null) {
     global $conn;
     $errors = [];
 
@@ -60,6 +60,9 @@ function register($nama, $email, $password, $role) {
     if (!in_array($role, ['guru', 'siswa'])) {
         $errors[] = "Role tidak valid.";
     }
+    if ($role == 'siswa' && empty($kelas_id)) {
+        $errors[] = "Kelas harus dipilih untuk siswa.";
+    }
 
     if (empty($errors)) {
         // Check if email already exists
@@ -71,8 +74,8 @@ function register($nama, $email, $password, $role) {
         } else {
             // Insert new user
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO users (nama, email, password, role) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $nama, $email, $hashed_password, $role);
+            $stmt = $conn->prepare("INSERT INTO users (nama, email, password, role, kelas_id) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssi", $nama, $email, $hashed_password, $role, $kelas_id);
             if ($stmt->execute()) {
                 return ['success' => true];
             } else {

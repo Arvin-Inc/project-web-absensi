@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
 </nav>
 
     <!-- Sidebar -->
-    <aside id="sidebar-multi-level-sidebar" class="fixed top-14 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+    <aside id="sidebar-multi-level-sidebar" class="fixed top-16 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
        <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
           <ul class="space-y-2 font-medium">
              <li>
@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
        </div>
     </aside>
 
-    <div class="p-4 sm:ml-64 mt-14">
+    <div class="p-4 sm:ml-64">
         <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
         <!-- Students Tab -->
         <div id="students-tab" class="tab-content">
@@ -273,107 +273,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                     <button type="submit" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">Filter</button>
                 </div>
             </form>
-
-            <!-- Messages Section -->
-            <div class="bg-white shadow overflow-hidden sm:rounded-md mb-8">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900">Pesan Izin/Sakit Hari Ini</h3>
-                </div>
-                <div class="divide-y divide-gray-200">
-                    <?php
-                    $today_messages = get_today_messages();
-                    if (!empty($today_messages)):
-                        foreach ($today_messages as $message):
-                    ?>
-                        <div class="px-6 py-4">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <?php if ($message['selfie']): ?>
-                                        <img src="../<?php echo $message['selfie']; ?>" alt="Selfie" class="h-12 w-12 rounded-full object-cover">
-                                    <?php else: ?>
-                                        <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
-                                            <span class="text-gray-600 text-sm"><?php echo substr($message['nama'], 0, 1); ?></span>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between">
-                                        <h4 class="text-sm font-medium text-gray-900"><?php echo $message['nama']; ?></h4>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            <?php
-                                            switch($message['status']) {
-                                                case 'Izin': echo 'bg-yellow-100 text-yellow-800'; break;
-                                                case 'Sakit': echo 'bg-blue-100 text-blue-800'; break;
-                                                default: echo 'bg-gray-100 text-gray-800';
-                                            }
-                                            ?>">
-                                            <?php echo $message['status']; ?>
-                                        </span>
-                                    </div>
-                                    <p class="text-sm text-gray-500 mt-1"><?php echo htmlspecialchars($message['message'] ?? 'Tidak ada pesan'); ?></p>
-                                    <p class="text-xs text-gray-400 mt-1"><?php echo date('d-m-Y H:i', strtotime($message['tanggal'])); ?></p>
-                                </div>
-                            </div>
-                        </div>
-                    <?php
-                        endforeach;
-                    else:
-                    ?>
-                        <div class="px-6 py-4 text-center text-gray-500">
-                            Tidak ada pesan izin/sakit hari ini.
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Attendance Reports Table -->
             <div class="bg-white shadow overflow-hidden sm:rounded-md">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pesan</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selfie</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <?php
-                        $start_date = $_GET['start_date'] ?? null;
-                        $end_date = $_GET['end_date'] ?? null;
-                        $reports = get_attendance_report(null, $start_date, $end_date);
-                        foreach ($reports as $report):
-                        ?>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo $report['nama']; ?></td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo date('d-m-Y', strtotime($report['tanggal'])); ?></td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                        <?php
-                                        switch($report['status']) {
-                                            case 'Hadir': echo 'bg-green-100 text-green-800'; break;
-                                            case 'Izin': echo 'bg-yellow-100 text-yellow-800'; break;
-                                            case 'Sakit': echo 'bg-blue-100 text-blue-800'; break;
-                                            case 'Alpha': echo 'bg-red-100 text-red-800'; break;
-                                        }
-                                        ?>">
-                                        <?php echo $report['status']; ?>
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-500"><?php echo htmlspecialchars($report['message'] ?? ''); ?></td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <?php if ($report['selfie']): ?>
-                                        <img src="../<?php echo $report['selfie']; ?>" alt="Selfie" class="h-16 w-16 object-cover rounded" />
-                                    <?php else: ?>
-                                        <span class="text-gray-400 italic">Tidak ada</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor Siswa</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <?php
+                $start_date = $_GET['start_date'] ?? null;
+                $end_date = $_GET['end_date'] ?? null;
+                $reports = get_attendance_report(null, $start_date, $end_date);
+                foreach ($reports as $report):
+                ?>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo $report['nama']; ?></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo date('d-m-Y', strtotime($report['tanggal'])); ?></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo $report['status']; ?></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($report['nomor_siswa'] ?? ''); ?></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($report['alamat'] ?? ''); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 
             <!-- Selfie Section -->
             <h3 class="text-xl font-bold mb-4 mt-8">Selfie Absensi</h3>
@@ -426,8 +354,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
         function showTab(tabName, button) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
             // Show selected tab
             document.getElementById(tabName + '-tab').classList.remove('hidden');
+            // Add active class to clicked button
+            button.classList.remove('bg-gray-200', 'text-gray-700');
+            button.classList.add('bg-primary', 'text-white');
             // Update URL without reloading
             const url = new URL(window.location);
             url.searchParams.set('tab', tabName);

@@ -39,7 +39,7 @@ function login($email, $password) {
     return ['success' => false, 'errors' => $errors];
 }
 
-function register($nama, $email, $password, $role, $kelas_id = null) {
+function register($nama, $email, $password, $role, $kelas_id = null, $nomor_siswa = null, $alamat = null) {
     global $conn;
     $errors = [];
 
@@ -63,6 +63,12 @@ function register($nama, $email, $password, $role, $kelas_id = null) {
     if ($role == 'siswa' && empty($kelas_id)) {
         $errors[] = "Kelas harus dipilih untuk siswa.";
     }
+    if ($role == 'siswa' && empty($nomor_siswa)) {
+        $errors[] = "Nomor siswa harus diisi untuk siswa.";
+    }
+    if ($role == 'siswa' && empty($alamat)) {
+        $errors[] = "Alamat harus diisi untuk siswa.";
+    }
 
     if (empty($errors)) {
         // Check if email already exists
@@ -74,8 +80,8 @@ function register($nama, $email, $password, $role, $kelas_id = null) {
         } else {
             // Insert new user
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO users (nama, email, password, role, kelas_id) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssi", $nama, $email, $hashed_password, $role, $kelas_id);
+            $stmt = $conn->prepare("INSERT INTO users (nama, email, password, role, kelas_id, nomor_siswa, alamat) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssiss", $nama, $email, $hashed_password, $role, $kelas_id, $nomor_siswa, $alamat);
             if ($stmt->execute()) {
                 return ['success' => true];
             } else {

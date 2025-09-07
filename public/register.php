@@ -7,7 +7,9 @@ require_once '../includes/functions.php';
 $classes = get_classes();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $result = register($_POST['nama'], $_POST['email'], $_POST['password'], $_POST['role'], $_POST['kelas_id']);
+    $nomor_siswa = isset($_POST['nomor_siswa']) ? $_POST['nomor_siswa'] : null;
+    $alamat = isset($_POST['alamat']) ? $_POST['alamat'] : null;
+    $result = register($_POST['nama'], $_POST['email'], $_POST['password'], $_POST['role'], $_POST['kelas_id'], $nomor_siswa, $alamat);
     if ($result['success']) {
         header("Location: login.php?registered=1");
         exit();
@@ -91,12 +93,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div>
                     <label for="kelas_id" class="sr-only">Kelas</label>
                     <select id="kelas_id" name="kelas_id" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm">
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm">
                         <option value="">Pilih Kelas</option>
                         <?php foreach ($classes as $kelas): ?>
                             <option value="<?php echo $kelas['id']; ?>"><?php echo htmlspecialchars($kelas['nama']); ?></option>
                         <?php endforeach; ?>
                     </select>
+                </div>
+                <div id="student-fields" style="display: none;">
+                    <div>
+                        <label for="nomor_siswa" class="sr-only">Nomor Siswa</label>
+                        <input id="nomor_siswa" name="nomor_siswa" type="text"
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                               placeholder="Nomor Siswa">
+                    </div>
+                    <div>
+                        <label for="alamat" class="sr-only">Alamat</label>
+                        <textarea id="alamat" name="alamat" rows="3"
+                                  class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                                  placeholder="Alamat"></textarea>
+                    </div>
                 </div>
             </div>
             <div>
@@ -110,5 +126,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <a href="index.php" class="text-primary hover:text-blue-500">Kembali ke Beranda</a>
         </div>
     </div>
+
+    <script>
+        document.getElementById('role').addEventListener('change', function() {
+            const studentFields = document.getElementById('student-fields');
+            const nomorSiswa = document.getElementById('nomor_siswa');
+            const alamat = document.getElementById('alamat');
+            if (this.value === 'siswa') {
+                studentFields.style.display = 'block';
+                nomorSiswa.required = true;
+                alamat.required = true;
+            } else {
+                studentFields.style.display = 'none';
+                nomorSiswa.required = false;
+                alamat.required = false;
+            }
+        });
+    </script>
 </body>
 </html>

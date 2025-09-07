@@ -41,6 +41,10 @@ CREATE TABLE kode_absen (
     CONSTRAINT fk_guru FOREIGN KEY (guru_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Add new columns for student profile
+ALTER TABLE users ADD COLUMN nomor_siswa VARCHAR(50) DEFAULT NULL;
+ALTER TABLE users ADD COLUMN alamat TEXT DEFAULT NULL;
+
 -- Insert sample data
 INSERT INTO kelas (nama) VALUES ('Kelas A'), ('Kelas B');
 

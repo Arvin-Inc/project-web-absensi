@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi Kelas - Sistem Absensi Modern</title>
+    <title>Absensi Kelas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -24,7 +24,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-gray-800">Absensi Kelas</h1>
+                    <h1 class="text-xl font-bold text-gray-800">Absensi</h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="login.php" class="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Login</a>
@@ -38,8 +38,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div class="text-center">
             <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                Sistem Absensi
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Kelas Modern</span>
+                Absensi
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Kelas</span>
             </h1>
             <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
                 Kelola absensi siswa dengan mudah dan efisien. Sistem yang dirancang untuk guru dan siswa dengan antarmuka yang intuitif.

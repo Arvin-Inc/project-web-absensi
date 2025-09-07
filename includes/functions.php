@@ -119,6 +119,26 @@ function get_izin_messages($kelas_id = null) {
     return $messages;
 }
 
+function get_today_messages() {
+    global $conn;
+    $today = date('Y-m-d');
+    $query = "SELECT a.*, u.nama, u.nomor_siswa, u.alamat
+              FROM absensi a
+              JOIN users u ON a.user_id = u.id
+              WHERE a.status IN ('Izin', 'Sakit') AND a.tanggal = ?
+              ORDER BY a.tanggal DESC";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $today);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $messages = [];
+    while ($row = $result->fetch_assoc()) {
+        $messages[] = $row;
+    }
+    $stmt->close();
+    return $messages;
+}
+
 function get_classes() {
     global $conn;
     $stmt = $conn->prepare("SELECT * FROM kelas ORDER BY nama");
@@ -145,7 +165,7 @@ function add_class($nama) {
 
 function get_user_profile($user_id) {
     global $conn;
-    $stmt = $conn->prepare("SELECT id, nama, email, role FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, nama, email, role, nomor_siswa, alamat FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -154,10 +174,10 @@ function get_user_profile($user_id) {
     return $user;
 }
 
-function update_user_profile($user_id, $nama, $email) {
+function update_user_profile($user_id, $nama, $email, $nomor_siswa = null, $alamat = null) {
     global $conn;
-    $stmt = $conn->prepare("UPDATE users SET nama = ?, email = ? WHERE id = ?");
-    $stmt->bind_param("ssi", $nama, $email, $user_id);
+    $stmt = $conn->prepare("UPDATE users SET nama = ?, email = ?, nomor_siswa = ?, alamat = ? WHERE id = ?");
+    $stmt->bind_param("ssssi", $nama, $email, $nomor_siswa, $alamat, $user_id);
     $result = $stmt->execute();
     $stmt->close();
     return $result;
@@ -206,11 +226,6 @@ function verify_code($input_code) {
 function mark_attendance($user_id, $status, $selfie_path = null, $message = null) {
     global $conn;
     $today = date('Y-m-d');
-
-    // If status is Hadir, require selfie
-    if ($status === 'Hadir' && !$selfie_path) {
-        return false; // Selfie required for Hadir
-    }
 
     // Check if attendance already exists for today
     $stmt = $conn->prepare("SELECT id FROM absensi WHERE user_id = ? AND tanggal = ?");

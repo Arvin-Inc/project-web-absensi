@@ -1,16 +1,13 @@
-# Attendance System Updates TODO
+# TODO: Fix Sidebar on Guru and Siswa Dashboards
 
-## Database Functions
-- [x] Add add_class function to includes/functions.php
+## Tasks
+- [x] Update navigation names in dashboard_siswa.php sidebar to appropriate student options
+- [x] Change hover colors in both dashboard_guru.php and dashboard_siswa.php to primary blue
+- [x] Ensure sidebar toggle functionality works correctly
+- [x] Test the changes for consistency and proper display
 
-## Admin Dashboard Updates
-- [x] Add form to add new classes in public/dashboard_admin.php
-
-## Teacher Dashboard Updates
-- [x] Add class filter to attendance tab in public/dashboard_guru.php
-- [x] Add modal for photo viewing in selfie tab in public/dashboard_guru.php
-
-## Testing
-- [ ] Test adding new classes in admin dashboard
-- [ ] Test class filtering in teacher attendance view
-- [ ] Test photo modal functionality
+## Details
+- Student sidebar currently has placeholder names like "E-commerce", "Kanban", etc.
+- Replace with: Dashboard, Status Absensi, Edit Profil, Logout
+- Hover colors: Change from gray to primary blue (hover:bg-primary)
+- Maintain consistency between teacher and student dashboards

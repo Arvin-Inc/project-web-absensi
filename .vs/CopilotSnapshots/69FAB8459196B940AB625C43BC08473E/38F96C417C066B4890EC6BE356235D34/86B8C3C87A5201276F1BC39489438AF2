@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
@@ -33,34 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
 // Handle self-attendance
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
     $status = $_POST['status'];
-    $message = isset($_POST['message']) ? $_POST['message'] : null;
-    $selfie_path = null;
-
-    // Handle selfie data for Hadir status
-    if ($status === 'Hadir' && isset($_POST['selfie_data']) && !empty($_POST['selfie_data'])) {
-        $selfie_data = $_POST['selfie_data'];
-        // Remove the data URL prefix (data:image/jpeg;base64,)
-        $selfie_data = str_replace('data:image/jpeg;base64,', '', $selfie_data);
-        $selfie_data = str_replace(' ', '+', $selfie_data);
-        $selfie_data = base64_decode($selfie_data);
-
-        // Create uploads directory if it doesn't exist
-        $upload_dir = '../assets/uploads/selfies/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
-        }
-
-        // Generate unique filename
-        $filename = 'selfie_' . $user_id . '_' . date('Ymd_His') . '.jpg';
-        $file_path = $upload_dir . $filename;
-
-        // Save the image
-        if (file_put_contents($file_path, $selfie_data)) {
-            $selfie_path = 'assets/uploads/selfies/' . $filename;
-        }
-    }
-
-    if (mark_attendance($user_id, $status, $selfie_path, $message)) {
+    if (mark_attendance($user_id, $status, null, null)) {
         $attendance_success = "Absensi berhasil dicatat.";
     } else {
         $attendance_error = "Gagal mencatat absensi.";
@@ -173,8 +146,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
    </div>
 </aside>
 
-    <div class="p-4 sm:ml-64 mt-14">
+    <div class="p-4 sm:ml-64 mt-16">
         <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+            <h1 class="text-xl font-bold text-gray-800 mb-4">Dashboard Siswa - Selamat datang, <?php echo $_SESSION['user_name']; ?></h1>
+        <!-- Tabs -->
+        <div class="mb-8">
+            <nav class="flex space-x-4" aria-label="Tabs">
+                <button onclick="showTab('attendance', this)" class="tab-button bg-primary text-white px-4 py-2 rounded-md">Status Absensi</button>
+                <button onclick="showTab('profile', this)" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Edit Profil</button>
+            </nav>
+        </div>
 
         <!-- Attendance Tab -->
         <div id="attendance-tab" class="tab-content">
@@ -193,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                         <?php echo $attendance_error; ?>
                     </div>
                 <?php endif; ?>
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST">
                     <div class="mb-4">
                         <label for="status" class="block text-sm font-medium text-gray-700">Status Absensi</label>
                         <select id="status" name="status" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
@@ -204,26 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                             <option value="Alpha">Alpha</option>
                         </select>
                     </div>
-
-                    <!-- Camera section for Hadir -->
-                    <div id="camera-section" class="mb-4 hidden">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Ambil Selfie</label>
-                        <video id="video" class="w-full max-w-sm mx-auto border border-gray-300 rounded" autoplay></video>
-                        <canvas id="canvas" class="hidden"></canvas>
-                        <div class="mt-2 text-center">
-                            <button type="button" id="capture-btn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                                Ambil Foto
-                            </button>
-                        </div>
-                        <input type="hidden" id="selfie-data" name="selfie_data">
-                    </div>
-
-                    <!-- Message section for Izin/Sakit -->
-                    <div id="message-section" class="mb-4 hidden">
-                        <label for="message" class="block text-sm font-medium text-gray-700">Pesan untuk Guru</label>
-                        <textarea id="message" name="message" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" placeholder="Jelaskan alasan izin atau sakit..."></textarea>
-                    </div>
-
                     <button type="submit" name="self_attendance" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
                         Catat Absensi
                     </button>
@@ -341,82 +302,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
             });
         });
     </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusSelect = document.getElementById('status');
-        const cameraSection = document.getElementById('camera-section');
-        const messageSection = document.getElementById('message-section');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const captureBtn = document.getElementById('capture-btn');
-        const selfieDataInput = document.getElementById('selfie-data');
-
-        let stream;
-
-        function startCamera() {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function(s) {
-                        stream = s;
-                        video.srcObject = stream;
-                        video.play();
-                    })
-                    .catch(function(err) {
-                        alert('Tidak dapat mengakses kamera: ' + err);
-                    });
-            } else {
-                alert('Browser Anda tidak mendukung akses kamera.');
-            }
-        }
-
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-        }
-
-        function capturePhoto() {
-            const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg');
-            selfieDataInput.value = dataUrl;
-            stopCamera();
-            cameraSection.classList.add('hidden');
-            alert('Foto berhasil diambil. Silakan klik "Catat Absensi" untuk mengirim.');
-        }
-
-        statusSelect.addEventListener('change', function() {
-            const value = this.value;
-            selfieDataInput.value = '';
-            if (value === 'Hadir') {
-                messageSection.classList.add('hidden');
-                cameraSection.classList.remove('hidden');
-                startCamera();
-            } else if (value === 'Izin' || value === 'Sakit') {
-                cameraSection.classList.add('hidden');
-                stopCamera();
-                messageSection.classList.remove('hidden');
-            } else {
-                cameraSection.classList.add('hidden');
-                messageSection.classList.add('hidden');
-                stopCamera();
-            }
-        });
-
-        captureBtn.addEventListener('click', function() {
-            capturePhoto();
-        });
-
-        // Initialize form state
-        if (statusSelect.value === 'Hadir') {
-            cameraSection.classList.remove('hidden');
-            startCamera();
-        } else if (statusSelect.value === 'Izin' || statusSelect.value === 'Sakit') {
-            messageSection.classList.remove('hidden');
-        }
-    });
-</script>
 </body>
 </html>

@@ -1,20 +1,27 @@
 <?php
-session_start();
 require_once '../includes/auth.php';
 
 $errors = [];
+$csrf_token = generate_csrf_token();
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $result = login($_POST['email'], $_POST['password']);
-    if ($result['success']) {
-        // Redirect based on role
-        if ($result['role'] == 'guru') {
-            header("Location: dashboard_guru.php");
-        } else {
-            header("Location: dashboard_siswa.php");
-        }
-        exit();
+    // Verify CSRF token
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        log_security_event('CSRF_ATTACK_DETECTED', 'Invalid CSRF token in login attempt');
+        $errors[] = "Permintaan tidak valid. Silakan coba lagi.";
     } else {
-        $errors = $result['errors'];
+        $result = login($_POST['email'], $_POST['password']);
+        if ($result['success']) {
+            // Redirect based on role
+            if ($result['role'] == 'guru') {
+                header("Location: dashboard_guru.php");
+            } else {
+                header("Location: dashboard_siswa.php");
+            }
+            exit();
+        } else {
+            $errors = $result['errors'];
+        }
     }
 }
 ?>
@@ -53,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </p>
         </div>
         <form class="mt-8 space-y-6" method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
             <?php if (!empty($errors)): ?>
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                     <ul>

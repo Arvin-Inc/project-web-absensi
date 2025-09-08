@@ -1,13 +1,5 @@
-# TODO: Fix Sidebar on Guru and Siswa Dashboards
+# TODO: Hide Class Selection for Guru in Registration
 
-## Tasks
-- [x] Update navigation names in dashboard_siswa.php sidebar to appropriate student options
-- [x] Change hover colors in both dashboard_guru.php and dashboard_siswa.php to primary blue
-- [x] Ensure sidebar toggle functionality works correctly
-- [x] Test the changes for consistency and proper display
-
-## Details
-- Student sidebar currently has placeholder names like "E-commerce", "Kanban", etc.
-- Replace with: Dashboard, Status Absensi, Edit Profil, Logout
-- Hover colors: Change from gray to primary blue (hover:bg-primary)
-- Maintain consistency between teacher and student dashboards
+- [x] Update JavaScript in public/register.php to hide/show kelas_id select based on role
+- [x] Update PHP validation in public/register.php to allow empty kelas_id when role is guru
+- [ ] Test the form behavior for both guru and siswa roles

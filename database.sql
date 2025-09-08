@@ -14,6 +14,7 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role ENUM('guru', 'siswa') NOT NULL,
+    active TINYINT(1) NOT NULL DEFAULT 1,
     kelas_id INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_kelas FOREIGN KEY (kelas_id) REFERENCES kelas(id) ON DELETE SET NULL
@@ -48,7 +49,7 @@ ALTER TABLE users ADD COLUMN alamat TEXT DEFAULT NULL;
 -- Insert sample data
 INSERT INTO kelas (nama) VALUES ('Kelas A'), ('Kelas B');
 
-INSERT INTO users (nama, email, password, role, kelas_id) VALUES
-('Guru 1', 'guru@example.com', '$2y$10$examplehashedpassword', 'guru', NULL),
-('Siswa 1', 'siswa1@example.com', '$2y$10$examplehashedpassword', 'siswa', 1),
-('Siswa 2', 'siswa2@example.com', '$2y$10$examplehashedpassword', 'siswa', 2);
+INSERT INTO users (nama, email, password, role, active, kelas_id) VALUES
+('Guru 1', 'guru@example.com', '$2y$10$examplehashedpassword', 'guru', 1, NULL),
+('Siswa 1', 'siswa1@example.com', '$2y$10$examplehashedpassword', 'siswa', 1, 1),
+('Siswa 2', 'siswa2@example.com', '$2y$10$examplehashedpassword', 'siswa', 1, 2);

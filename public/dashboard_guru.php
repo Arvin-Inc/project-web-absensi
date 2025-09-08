@@ -8,9 +8,9 @@ if (!is_logged_in() || $_SESSION['user_role'] != 'guru') {
     exit();
 }
 
-$students = get_students();
 $classes = get_classes();
 $selected_kelas_id = $_GET['kelas_id'] ?? null;
+$students = get_students($selected_kelas_id);
 $attendance_today = get_attendance_today($selected_kelas_id);
 
 $generated_code = null;
@@ -173,6 +173,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
         <!-- Students Tab -->
         <div id="students-tab" class="tab-content">
             <h2 class="text-2xl font-bold mb-4">Daftar Siswa</h2>
+            <form method="GET" class="mb-4">
+                <label for="kelas_id_students" class="block mb-2 font-medium text-gray-700">Filter berdasarkan Kelas:</label>
+                <select id="kelas_id_students" name="kelas_id" class="border border-gray-300 rounded px-3 py-2 w-64" onchange="this.form.submit()">
+                    <option value="">-- Semua Kelas --</option>
+                    <?php foreach ($classes as $kelas): ?>
+                        <option value="<?php echo $kelas['id']; ?>" <?php if ($kelas['id'] == $selected_kelas_id) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($kelas['nama']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
             <div class="bg-white shadow overflow-hidden sm:rounded-md">
                 <ul class="divide-y divide-gray-200">
                     <?php foreach ($students as $student): ?>
@@ -180,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="text-lg font-medium text-gray-900"><?php echo $student['nama']; ?></h3>
-                                    <p class="text-gray-500"><?php echo $student['email']; ?></p>
+                                    <p class="text-gray-500"><?php echo $student['email']; ?> - Kelas: <?php echo $student['kelas']; ?></p>
                                 </div>
                                 <form method="POST" class="flex space-x-2">
                                     <input type="hidden" name="user_id" value="<?php echo $student['id']; ?>">
@@ -195,6 +206,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                             </div>
                         </li>
                     <?php endforeach; ?>
+                    <?php if (empty($students)): ?>
+                        <li class="px-6 py-4 text-center text-gray-500">
+                            <?php if ($selected_kelas_id): ?>
+                                Tidak ada siswa di kelas yang dipilih.
+                            <?php else: ?>
+                                Belum ada data siswa.
+                            <?php endif; ?>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -234,7 +254,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
         <div id="kelola-kelas-tab" class="tab-content hidden">
             <h2 class="text-2xl font-bold mb-4">Kelola Kelas</h2>
             <h3 class="text-xl font-bold mb-4">Tambah Kelas Baru</h3>
-            <form method="POST" class="mb-8">
+            <form method="POST" class="mb-8" id="add-class-form">
+                <input type="hidden" name="action" value="add_class">
                 <label for="class_name" class="block mb-2 font-medium text-gray-700">Nama Kelas:</label>
                 <input type="text" id="class_name" name="class_name" class="border border-gray-300 rounded px-3 py-2 w-64" required>
                 <button type="submit" name="add_class" class="ml-4 bg-secondary text-white px-4 py-2 rounded hover:bg-green-700">Tambah Kelas</button>
@@ -426,6 +447,80 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
             window.history.pushState({}, '', url);
         }
 
+        function showMessage(message, type = 'success') {
+            // Remove existing messages
+            const existingMessages = document.querySelectorAll('.alert-message');
+            existingMessages.forEach(msg => msg.remove());
+
+            // Create new message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert-message px-4 py-3 rounded mb-4 ${type === 'success' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`;
+            messageDiv.textContent = message;
+
+            // Insert at the top of the main content area
+            const mainContent = document.querySelector('.p-4.border-2');
+            if (mainContent) {
+                mainContent.insertBefore(messageDiv, mainContent.firstChild);
+            }
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function handleAjaxForm(form, url) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                const loadingOverlay = document.getElementById('loading-overlay');
+
+                // Show loading
+                loadingOverlay.classList.remove('hidden');
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading
+                    loadingOverlay.classList.add('hidden');
+
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+
+                        // Reset form if it's the add class form
+                        if (form.id === 'add-class-form') {
+                            form.reset();
+                            // Optionally refresh the class list
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        }
+
+                        // For attendance forms, you might want to update the UI
+                        if (form.querySelector('input[name="mark_attendance"]')) {
+                            // Refresh the attendance list
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        }
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    loadingOverlay.classList.add('hidden');
+                    showMessage('Terjadi kesalahan. Silakan coba lagi.', 'error');
+                    console.error('Error:', error);
+                });
+            });
+        }
+
         // Sidebar toggle
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar-multi-level-sidebar');
@@ -435,12 +530,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                 sidebar.classList.toggle('-translate-x-full');
             });
 
-            // Show loading on form submit
-            const forms = document.querySelectorAll('form');
-            forms.forEach(form => {
-                form.addEventListener('submit', function() {
-                    document.getElementById('loading-overlay').classList.remove('hidden');
-                });
+            // Handle AJAX forms
+            const addClassForm = document.getElementById('add-class-form');
+            if (addClassForm) {
+                handleAjaxForm(addClassForm, 'ajax_handler_guru.php');
+            }
+
+            // Handle attendance forms
+            const attendanceForms = document.querySelectorAll('form');
+            attendanceForms.forEach(form => {
+                if (form.querySelector('input[name="mark_attendance"]')) {
+                    handleAjaxForm(form, 'ajax_handler_guru.php');
+                }
             });
 
             // Check URL for active tab

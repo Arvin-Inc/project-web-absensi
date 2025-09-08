@@ -12,60 +12,9 @@ $user_id = $_SESSION['user_id'];
 $user_profile = get_user_profile($user_id);
 $attendance_reports = get_attendance_report($user_id);
 
-$attendance_success = null;
-$attendance_error = null;
-
-// Handle profile update
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
-    $nama = $_POST['nama'];
-    $email = $_POST['email'];
-    $nomor_siswa = isset($_POST['nomor_siswa']) ? $_POST['nomor_siswa'] : null;
-    $alamat = isset($_POST['alamat']) ? $_POST['alamat'] : null;
-    if (update_user_profile($user_id, $nama, $email, $nomor_siswa, $alamat)) {
-        $_SESSION['user_name'] = $nama;
-        $success = "Profil berhasil diperbarui.";
-        $user_profile = get_user_profile($user_id);
-    } else {
-        $error = "Gagal memperbarui profil.";
-    }
-}
-
-// Handle self-attendance
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
-    $status = $_POST['status'];
-    $message = isset($_POST['message']) ? $_POST['message'] : null;
-    $selfie_path = null;
-
-    // Handle selfie data for Hadir status
-    if ($status === 'Hadir' && isset($_POST['selfie_data']) && !empty($_POST['selfie_data'])) {
-        $selfie_data = $_POST['selfie_data'];
-        // Remove the data URL prefix (data:image/jpeg;base64,)
-        $selfie_data = str_replace('data:image/jpeg;base64,', '', $selfie_data);
-        $selfie_data = str_replace(' ', '+', $selfie_data);
-        $selfie_data = base64_decode($selfie_data);
-
-        // Create uploads directory if it doesn't exist
-        $upload_dir = '../assets/uploads/selfies/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
-        }
-
-        // Generate unique filename
-        $filename = 'selfie_' . $user_id . '_' . date('Ymd_His') . '.jpg';
-        $file_path = $upload_dir . $filename;
-
-        // Save the image
-        if (file_put_contents($file_path, $selfie_data)) {
-            $selfie_path = 'assets/uploads/selfies/' . $filename;
-        }
-    }
-
-    if (mark_attendance($user_id, $status, $selfie_path, $message)) {
-        $attendance_success = "Absensi berhasil dicatat.";
-    } else {
-        $attendance_error = "Gagal mencatat absensi.";
-    }
-}
+// Initialize attendance message variables to prevent undefined variable warnings
+$attendance_success = '';
+$attendance_error = '';
 ?>
 
 <!DOCTYPE html>
@@ -193,7 +142,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                         <?php echo $attendance_error; ?>
                     </div>
                 <?php endif; ?>
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST" enctype="multipart/form-data" id="self-attendance-form">
+                    <input type="hidden" name="action" value="self_attendance">
                     <div class="mb-4">
                         <label for="status" class="block text-sm font-medium text-gray-700">Status Absensi</label>
                         <select id="status" name="status" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
@@ -293,7 +243,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                         <?php echo $error; ?>
                     </div>
                 <?php endif; ?>
-                <form method="POST">
+                <form method="POST" id="profile-update-form">
+                    <input type="hidden" name="action" value="update_profile">
                     <div class="mb-4">
                         <label for="nama" class="block text-sm font-medium text-gray-700">Nama</label>
                         <input type="text" id="nama" name="nama" value="<?php echo $user_profile['nama']; ?>" required
@@ -319,6 +270,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
                     </button>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p class="text-gray-700">Memproses...</p>
         </div>
     </div>
 
@@ -350,6 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
         const canvas = document.getElementById('canvas');
         const captureBtn = document.getElementById('capture-btn');
         const selfieDataInput = document.getElementById('selfie-data');
+        const loadingOverlay = document.getElementById('loading-overlay');
 
         let stream;
 
@@ -386,6 +346,107 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['self_attendance'])) {
             cameraSection.classList.add('hidden');
             alert('Foto berhasil diambil. Silakan klik "Catat Absensi" untuk mengirim.');
         }
+
+        function showLoading() {
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `px-4 py-3 rounded mb-4 ${type === 'success' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`;
+            messageDiv.textContent = message;
+
+            // Remove existing messages
+            const existingMessages = document.querySelectorAll('.bg-green-100, .bg-red-100');
+            existingMessages.forEach(msg => msg.remove());
+
+            // Add new message
+            const form = document.querySelector('.bg-white.shadow.overflow-hidden.sm\\:rounded-md.p-6.mb-6');
+            if (form) {
+                form.insertBefore(messageDiv, form.firstChild);
+            }
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Handle self-attendance form submission
+        document.getElementById('self-attendance-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showLoading();
+
+            const formData = new FormData(this);
+
+            fetch('ajax_handler_siswa.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    // Reset form
+                    this.reset();
+                    // Reset camera and message sections
+                    cameraSection.classList.add('hidden');
+                    messageSection.classList.add('hidden');
+                    stopCamera();
+                    // Refresh attendance table
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showMessage('Terjadi kesalahan saat memproses permintaan.', 'error');
+                console.error('Error:', error);
+            });
+        });
+
+        // Handle profile update form submission
+        document.getElementById('profile-update-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showLoading();
+
+            const formData = new FormData(this);
+
+            fetch('ajax_handler_siswa.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    // Update user name in header if changed
+                    if (data.user_name) {
+                        document.querySelector('#dropdown-user p:first-child').textContent = data.user_name;
+                    }
+                    // Refresh page after success
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showMessage('Terjadi kesalahan saat memproses permintaan.', 'error');
+                console.error('Error:', error);
+            });
+        });
 
         statusSelect.addEventListener('change', function() {
             const value = this.value;

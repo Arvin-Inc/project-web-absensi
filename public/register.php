@@ -1,20 +1,37 @@
 <?php
-session_start();
 require_once '../includes/auth.php';
+require_once '../includes/functions.php';
 
 $errors = [];
-require_once '../includes/functions.php';
 $classes = get_classes();
+$csrf_token = generate_csrf_token();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nomor_siswa = isset($_POST['nomor_siswa']) ? $_POST['nomor_siswa'] : null;
-    $alamat = isset($_POST['alamat']) ? $_POST['alamat'] : null;
-    $result = register($_POST['nama'], $_POST['email'], $_POST['password'], $_POST['role'], $_POST['kelas_id'], $nomor_siswa, $alamat);
-    if ($result['success']) {
-        header("Location: login.php?registered=1");
-        exit();
+    // Verify CSRF token
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        log_security_event('CSRF_ATTACK_DETECTED', 'Invalid CSRF token in registration attempt');
+        $errors[] = "Permintaan tidak valid. Silakan coba lagi.";
     } else {
-        $errors = $result['errors'];
+        // Sanitize inputs
+        $nama = sanitize_input($_POST['nama']);
+        $email = sanitize_input($_POST['email']);
+        $password = sanitize_input($_POST['password']);
+        $role = sanitize_input($_POST['role']);
+        $kelas_id = sanitize_input($_POST['kelas_id']);
+        if ($role == 'guru') {
+            $kelas_id = null;
+        }
+        $nomor_siswa = isset($_POST['nomor_siswa']) ? sanitize_input($_POST['nomor_siswa']) : null;
+        $alamat = isset($_POST['alamat']) ? sanitize_input($_POST['alamat']) : null;
+
+        $result = register($nama, $email, $password, $role, $kelas_id, $nomor_siswa, $alamat);
+        if ($result['success']) {
+            log_security_event('REGISTRATION_SUCCESS', 'New user registered: ' . $email);
+            header("Location: login.php?registered=1");
+            exit();
+        } else {
+            $errors = $result['errors'];
+        }
     }
 }
 ?>
@@ -53,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </p>
         </div>
         <form class="mt-8 space-y-6" method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
             <?php if (!empty($errors)): ?>
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                     <ul>
@@ -127,21 +145,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 
-    <script>
-        document.getElementById('role').addEventListener('change', function() {
-            const studentFields = document.getElementById('student-fields');
-            const nomorSiswa = document.getElementById('nomor_siswa');
-            const alamat = document.getElementById('alamat');
-            if (this.value === 'siswa') {
-                studentFields.style.display = 'block';
-                nomorSiswa.required = true;
-                alamat.required = true;
-            } else {
-                studentFields.style.display = 'none';
-                nomorSiswa.required = false;
-                alamat.required = false;
-            }
-        });
-    </script>
+<script>
+    function toggleFields() {
+        const roleSelect = document.getElementById('role');
+        const studentFields = document.getElementById('student-fields');
+        const kelasSelect = document.getElementById('kelas_id');
+        const nomorSiswa = document.getElementById('nomor_siswa');
+        const alamat = document.getElementById('alamat');
+
+        if (roleSelect.value === 'siswa') {
+            studentFields.style.display = 'block';
+            nomorSiswa.required = true;
+            alamat.required = true;
+            kelasSelect.style.display = 'block';
+            kelasSelect.required = true;
+        } else if (roleSelect.value === 'guru') {
+            studentFields.style.display = 'none';
+            nomorSiswa.required = false;
+            alamat.required = false;
+            kelasSelect.style.display = 'none';
+            kelasSelect.required = false;
+        } else {
+            studentFields.style.display = 'none';
+            nomorSiswa.required = false;
+            alamat.required = false;
+            kelasSelect.style.display = 'block';
+            kelasSelect.required = true;
+        }
+    }
+
+    document.getElementById('role').addEventListener('change', toggleFields);
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', toggleFields);
+</script>
 </body>
 </html>

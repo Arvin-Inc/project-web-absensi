@@ -1,9 +1,24 @@
 <?php
 require_once '../config/db.php';
 
-function get_students() {
+function get_students($kelas_id = null) {
     global $conn;
-    $stmt = $conn->prepare("SELECT u.id, u.nama, u.email, k.nama as kelas FROM users u LEFT JOIN kelas k ON u.kelas_id = k.id WHERE u.role = 'siswa' ORDER BY u.nama");
+    $query = "SELECT u.id, u.nama, u.email, k.nama as kelas FROM users u LEFT JOIN kelas k ON u.kelas_id = k.id WHERE u.role = 'siswa'";
+    $params = [];
+    $types = "";
+
+    if ($kelas_id) {
+        $query .= " AND u.kelas_id = ?";
+        $params[] = $kelas_id;
+        $types .= "i";
+    }
+
+    $query .= " ORDER BY u.nama";
+
+    $stmt = $conn->prepare($query);
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
     $stmt->execute();
     $result = $stmt->get_result();
     $students = [];
@@ -261,19 +276,23 @@ function validate_image($file) {
 }
 
 function upload_selfie($file, $user_id) {
-    $upload_dir = '../assets/uploads/selfies/';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
+    // Validate file first
+    $validation_errors = validate_file_upload($file);
+    if (!empty($validation_errors)) {
+        log_security_event('FILE_UPLOAD_FAILED', 'Validation failed: ' . implode(', ', $validation_errors));
+        return false;
     }
 
-    $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $filename = 'selfie_' . $user_id . '_' . date('Ymd_His') . '.' . $file_extension;
-    $target_path = $upload_dir . $filename;
+    // Use secure upload function
+    $upload_dir = '../assets/uploads/selfies/';
+    $filename = secure_file_upload($file, $upload_dir, 'selfie_' . $user_id . '_' . date('Ymd_His'));
 
-    if (move_uploaded_file($file['tmp_name'], $target_path)) {
+    if ($filename) {
+        log_security_event('FILE_UPLOAD_SUCCESS', 'Selfie uploaded for user: ' . $user_id);
         return 'assets/uploads/selfies/' . $filename;
     }
 
+    log_security_event('FILE_UPLOAD_FAILED', 'Failed to save file for user: ' . $user_id);
     return false;
 }
 ?>

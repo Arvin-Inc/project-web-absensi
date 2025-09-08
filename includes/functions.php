@@ -3,7 +3,7 @@ require_once '../config/db.php';
 
 function get_students($kelas_id = null) {
     global $conn;
-    $query = "SELECT u.id, u.nama, u.email, k.nama as kelas FROM users u LEFT JOIN kelas k ON u.kelas_id = k.id WHERE u.role = 'siswa'";
+    $query = "SELECT u.id, u.nama, u.email, u.nomor_siswa, u.alamat, k.nama as kelas FROM users u LEFT JOIN kelas k ON u.kelas_id = k.id WHERE u.role = 'siswa'";
     $params = [];
     $types = "";
 
@@ -104,9 +104,9 @@ function get_attendance_report($user_id = null, $start_date = null, $end_date = 
 
 function get_izin_messages($kelas_id = null) {
     global $conn;
-    $query = "SELECT u.nama, a.tanggal, a.message 
-              FROM absensi a 
-              JOIN users u ON a.user_id = u.id 
+    $query = "SELECT u.nama, a.tanggal, a.message, a.selfie
+              FROM absensi a
+              JOIN users u ON a.user_id = u.id
               WHERE a.status = 'Izin'";
 
     $params = [];

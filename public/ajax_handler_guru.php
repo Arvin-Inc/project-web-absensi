@@ -43,6 +43,38 @@ switch ($action) {
         }
         break;
 
+    case 'bulk_mark_attendance':
+        $attendance_data = $_POST['attendance'] ?? [];
+
+        if (empty($attendance_data)) {
+            echo json_encode(['success' => false, 'message' => 'Tidak ada data absensi yang dipilih']);
+            exit();
+        }
+
+        $success_count = 0;
+        $error_count = 0;
+
+        foreach ($attendance_data as $user_id => $status) {
+            if (!empty($status)) {
+                if (mark_attendance($user_id, $status)) {
+                    $success_count++;
+                } else {
+                    $error_count++;
+                }
+            }
+        }
+
+        if ($success_count > 0) {
+            $message = "Absensi berhasil dicatat untuk {$success_count} siswa";
+            if ($error_count > 0) {
+                $message .= ", {$error_count} gagal";
+            }
+            echo json_encode(['success' => true, 'message' => $message]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal mencatat absensi']);
+        }
+        break;
+
     case 'generate_code':
         $guru_id = $_SESSION['user_id'];
         $code = generate_code($guru_id);

@@ -15,9 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $nama = sanitize_input($_POST['nama']);
         $email = sanitize_input($_POST['email']);
         $password = sanitize_input($_POST['password']);
+        $mata_pelajaran = sanitize_input($_POST['mata_pelajaran']);
+        $nomor_telepon = sanitize_input($_POST['nomor_telepon']);
+        $alamat_guru = sanitize_input($_POST['alamat_guru']);
         $role = 'guru';
 
-        $result = register($nama, $email, $password, $role);
+        $result = register_guru($nama, $email, $password, $mata_pelajaran, $nomor_telepon, $alamat_guru);
         if ($result['success']) {
             log_security_event('REGISTRATION_SUCCESS', 'New guru registered: ' . $email);
             header("Location: login.php?registered=1");
@@ -91,6 +94,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input id="password" name="password" type="password" required
                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                            placeholder="Password (min 6 karakter)" />
+                </div>
+                <div>
+                    <label for="mata_pelajaran" class="sr-only">Mata Pelajaran</label>
+                    <input id="mata_pelajaran" name="mata_pelajaran" type="text" required
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                           placeholder="Mata Pelajaran" />
+                </div>
+                <div>
+                    <label for="nomor_telepon" class="sr-only">Nomor Telepon</label>
+                    <input id="nomor_telepon" name="nomor_telepon" type="tel"
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                           placeholder="Nomor Telepon" />
+                </div>
+                <div>
+                    <label for="alamat_guru" class="sr-only">Alamat</label>
+                    <textarea id="alamat_guru" name="alamat_guru" rows="3"
+                              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                              placeholder="Alamat Lengkap"></textarea>
                 </div>
             </div>
             <div>

@@ -11,6 +11,7 @@ if (!is_logged_in() || $_SESSION['user_role'] != 'siswa') {
 $user_id = $_SESSION['user_id'];
 $user_profile = get_user_profile($user_id);
 $attendance_reports = get_attendance_report($user_id);
+$teachers = get_teachers();
 
 // Initialize attendance message variables to prevent undefined variable warnings
 $attendance_success = '';
@@ -60,7 +61,13 @@ $attendance_error = '';
             <div>
               <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                 <span class="sr-only">Open user menu</span>
-                <img class="w-8 h-8 rounded-full" src="https://ui-avatars.com/api/?name=Arfi+Nade" alt="user photo">
+                <?php if (!empty($user_profile['profile_photo'])): ?>
+                  <img class="w-8 h-8 rounded-full object-cover" src="<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil">
+                <?php else: ?>
+                  <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                    <span class="text-white text-sm font-medium"><?php echo substr($user_profile['nama'], 0, 1); ?></span>
+                  </div>
+                <?php endif; ?>
               </button>
             </div>
             <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
@@ -74,10 +81,13 @@ $attendance_error = '';
               </div>
               <ul class="py-1" role="none">
                 <li>
-                  <a href="#" onclick="showTab('attendance', this)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Status Absensi</a>
+                  <a href="#" onclick="showTab('attendance', this)" class="tab-button block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Status Absensi</a>
                 </li>
                 <li>
-                  <a href="#" onclick="showTab('profile', this)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profil</a>
+                  <a href="#" onclick="showTab('profile', this)" class="tab-button block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Edit Profil</a>
+                </li>
+                <li>
+                  <a href="#" onclick="showTab('teachers', this)" class="tab-button block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Data Guru</a>
                 </li>
                 <li>
                   <a href="logout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Logout</a>
@@ -94,19 +104,26 @@ $attendance_error = '';
    <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
       <ul class="space-y-2 font-medium">
          <li>
-            <a href="#" onclick="showTab('attendance', this)" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-white dark:hover:bg-gray-700 group">
-               <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                  <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
-                  <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
+            <a href="#" onclick="showTab('attendance', this)" class="tab-button flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-white dark:hover:bg-gray-700 group">
+               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7a2 2 0 002 2z" />
                </svg>
                <span class="ms-3">Status Absensi</span>
             </a>
          </li>
          <li>
-            <a href="#" onclick="showTab('profile', this)" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-white dark:hover:bg-gray-700 group">
-               <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <a href="#" onclick="showTab('teachers', this)" class="tab-button flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-white dark:hover:bg-gray-700 group">
+               <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                   <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
                </svg>
+               <span class="flex-1 ms-3 whitespace-nowrap">Data Guru</span>
+            </a>
+         </li>
+         <li>
+            <a href="#" onclick="showTab('profile', this)" class="tab-button flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-white dark:hover:bg-gray-700 group">
+                <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                   <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
+                </svg>
                <span class="flex-1 ms-3 whitespace-nowrap">Edit Profil</span>
             </a>
          </li>
@@ -180,53 +197,53 @@ $attendance_error = '';
                 </form>
             </div>
 
-            <div class="bg-white shadow overflow-hidden sm:rounded-md">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+        <div class="bg-white shadow overflow-hidden sm:rounded-md overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pesan</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selfie</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <?php foreach ($attendance_reports as $report): ?>
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pesan</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selfie</th>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo date('d-m-Y', strtotime($report['tanggal'])); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                    <?php
+                                    switch($report['status']) {
+                                        case 'Hadir': echo 'bg-green-100 text-green-800'; break;
+                                        case 'Izin': echo 'bg-yellow-100 text-yellow-800'; break;
+                                        case 'Sakit': echo 'bg-blue-100 text-blue-800'; break;
+                                        case 'Alpha': echo 'bg-red-100 text-red-800'; break;
+                                    }
+                                    ?>">
+                                    <?php echo $report['status']; ?>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 break-words">
+                                <?php echo htmlspecialchars($report['message'] ?? ''); ?>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <?php if ($report['selfie']): ?>
+                                    <img src="../<?php echo $report['selfie']; ?>" alt="Selfie" class="h-16 w-16 object-cover rounded" />
+                                <?php else: ?>
+                                    <span class="text-gray-400 italic">Tidak ada</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <?php foreach ($attendance_reports as $report): ?>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo date('d-m-Y', strtotime($report['tanggal'])); ?></td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                        <?php
-                                        switch($report['status']) {
-                                            case 'Hadir': echo 'bg-green-100 text-green-800'; break;
-                                            case 'Izin': echo 'bg-yellow-100 text-yellow-800'; break;
-                                            case 'Sakit': echo 'bg-blue-100 text-blue-800'; break;
-                                            case 'Alpha': echo 'bg-red-100 text-red-800'; break;
-                                        }
-                                        ?>">
-                                        <?php echo $report['status']; ?>
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <?php echo htmlspecialchars($report['message'] ?? ''); ?>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <?php if ($report['selfie']): ?>
-                                        <img src="../<?php echo $report['selfie']; ?>" alt="Selfie" class="h-16 w-16 object-cover rounded" />
-                                    <?php else: ?>
-                                        <span class="text-gray-400 italic">Tidak ada</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <?php if (empty($attendance_reports)): ?>
-                            <tr>
-                                <td colspan="3" class="px-6 py-4 text-center text-gray-500">Belum ada data absensi.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                    <?php endforeach; ?>
+                    <?php if (empty($attendance_reports)): ?>
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">Belum ada data absensi.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
         </div>
 
         <!-- Profile Tab -->
@@ -243,7 +260,7 @@ $attendance_error = '';
                         <?php echo $error; ?>
                     </div>
                 <?php endif; ?>
-                <form method="POST" id="profile-update-form">
+                <form method="POST" enctype="multipart/form-data" id="profile-update-form">
                     <input type="hidden" name="action" value="update_profile">
                     <div class="mb-4">
                         <label for="nama" class="block text-sm font-medium text-gray-700">Nama</label>
@@ -265,10 +282,94 @@ $attendance_error = '';
                         <textarea id="alamat" name="alamat" rows="3"
                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"><?php echo htmlspecialchars($user_profile['alamat'] ?? ''); ?></textarea>
                     </div>
+                    <div class="mb-4">
+                        <label for="profile_photo" class="block text-sm font-medium text-gray-700">Foto Profil</label>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <?php if (!empty($user_profile['profile_photo'])): ?>
+                                    <img src="<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil" class="w-16 h-16 object-cover rounded-full border">
+                                <?php else: ?>
+                                    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <span class="text-gray-500 text-sm">No Photo</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="flex-1">
+                                <input type="file" id="profile_photo" name="profile_photo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <p class="text-sm text-gray-500 mt-1">Pilih file gambar (JPG, PNG, GIF) maksimal 2MB</p>
+                            </div>
+                        </div>
+                    </div>
                     <button type="submit" name="update_profile" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
                         Simpan Perubahan
                     </button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Teachers Tab -->
+        <div id="teachers-tab" class="tab-content hidden">
+            <h2 class="text-2xl font-bold mb-4">Data Guru</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php foreach ($teachers as $teacher): ?>
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+                        <div class="bg-gradient-to-r from-primary to-blue-600 p-4">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold text-lg"><?php echo substr($teacher['nama'], 0, 1); ?></span>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-white"><?php echo htmlspecialchars($teacher['nama']); ?></h3>
+                                    <p class="text-blue-100 text-sm">Guru <?php echo htmlspecialchars($teacher['mata_pelajaran'] ?? 'Belum ditentukan'); ?></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Email</p>
+                                        <p class="text-sm text-gray-600"><?php echo htmlspecialchars($teacher['email']); ?></p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">No. Telepon</p>
+                                        <p class="text-sm text-gray-600"><?php echo htmlspecialchars($teacher['nomor_telepon'] ?? 'Belum diisi'); ?></p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-gray-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Alamat</p>
+                                        <p class="text-sm text-gray-600"><?php echo htmlspecialchars($teacher['alamat_guru'] ?? 'Belum diisi'); ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+                <?php if (empty($teachers)): ?>
+                    <div class="col-span-full bg-white shadow-lg rounded-lg p-8 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada guru</h3>
+                        <p class="mt-1 text-sm text-gray-500">Belum ada data guru yang terdaftar.</p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -282,12 +383,22 @@ $attendance_error = '';
     </div>
 
     <script>
-        function showTab(tabName, button) {
+        function showTab(tabId, element) {
             // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => button.classList.remove('bg-gray-100/10', 'text-white'));
+
             // Show selected tab
-            document.getElementById(tabName + '-tab').classList.remove('hidden');
-            // Tidak ada perubahan warna pada tombol tab
+            document.getElementById(tabId + '-tab').classList.remove('hidden');
+
+            // Add active class to clicked button
+            if (element) {
+                element.classList.add('bg-gray-100/10', 'text-white');
+            }
         }
 
         // Sidebar toggle

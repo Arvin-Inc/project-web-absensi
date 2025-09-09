@@ -1,19 +1,11 @@
-# TODO List for Implementing Full Attendance Reports with Selfies
+# TODO: Fix Nama Input Field Size in Attendance Section
 
 ## Tasks
-- [x] Implement izin report display in dashboard_guru.php reports-izin-tab
-- [x] Implement attendance input form in dashboard_guru.php input-absensi-tab
-- [x] Modify reports tab to show full attendance reports with selfies
-- [x] Add date range filters to reports
-- [x] Make selfies larger and clickable in reports
-- [ ] Test full attendance reports functionality
-- [ ] Test teacher attendance input functionality
-- [ ] Verify no regressions in existing features
+- [x] Change "Nama" column in attendance input table from plain text to read-only input field
+- [x] Apply responsive styling to the input field for proper size adjustment
+- [x] Test the dashboard to verify the input field adjusts size correctly
 
-## Details
-- Use get_attendance_report() function to fetch all attendance data including selfies
-- Add start_date and end_date filters to reports tab
-- Display selfies for all attendance statuses where available
-- Make selfies clickable to view full size
-- Ensure proper filtering by class
-- Use AJAX for bulk attendance marking if needed
+## Status
+- [x] Plan confirmed by user
+- [x] Code edit completed
+- [x] Testing completed

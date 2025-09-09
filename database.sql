@@ -46,6 +46,14 @@ CREATE TABLE kode_absen (
 ALTER TABLE users ADD COLUMN nomor_siswa VARCHAR(50) DEFAULT NULL;
 ALTER TABLE users ADD COLUMN alamat TEXT DEFAULT NULL;
 
+-- Add new columns for teacher profile
+ALTER TABLE users ADD COLUMN mata_pelajaran VARCHAR(100) DEFAULT NULL;
+ALTER TABLE users ADD COLUMN nomor_telepon VARCHAR(20) DEFAULT NULL;
+ALTER TABLE users ADD COLUMN alamat_guru TEXT DEFAULT NULL;
+
+-- Add profile photo column for both guru and siswa
+ALTER TABLE users ADD COLUMN profile_photo VARCHAR(255) DEFAULT NULL;
+
 -- Insert sample data
 INSERT INTO kelas (nama) VALUES ('Kelas A'), ('Kelas B');
 

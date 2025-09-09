@@ -180,7 +180,7 @@ function add_class($nama) {
 
 function get_user_profile($user_id) {
     global $conn;
-    $stmt = $conn->prepare("SELECT id, nama, email, role, nomor_siswa, alamat FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, nama, email, role, nomor_siswa, alamat, profile_photo FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -189,10 +189,10 @@ function get_user_profile($user_id) {
     return $user;
 }
 
-function update_user_profile($user_id, $nama, $email, $nomor_siswa = null, $alamat = null) {
+function update_user_profile($user_id, $nama, $email, $nomor_siswa = null, $alamat = null, $profile_photo = null) {
     global $conn;
-    $stmt = $conn->prepare("UPDATE users SET nama = ?, email = ?, nomor_siswa = ?, alamat = ? WHERE id = ?");
-    $stmt->bind_param("ssssi", $nama, $email, $nomor_siswa, $alamat, $user_id);
+    $stmt = $conn->prepare("UPDATE users SET nama = ?, email = ?, nomor_siswa = ?, alamat = ?, profile_photo = ? WHERE id = ?");
+    $stmt->bind_param("sssssi", $nama, $email, $nomor_siswa, $alamat, $profile_photo, $user_id);
     $result = $stmt->execute();
     $stmt->close();
     return $result;
@@ -294,5 +294,86 @@ function upload_selfie($file, $user_id) {
 
     log_security_event('FILE_UPLOAD_FAILED', 'Failed to save file for user: ' . $user_id);
     return false;
+}
+
+function register_guru($nama, $email, $password, $mata_pelajaran, $nomor_telepon, $alamat_guru) {
+    global $conn;
+    $errors = [];
+
+    // Validate inputs
+    if (empty($nama)) {
+        $errors[] = "Nama harus diisi.";
+    }
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Email tidak valid.";
+    }
+    if (empty($password) || strlen($password) < 6) {
+        $errors[] = "Password minimal 6 karakter.";
+    }
+    if (empty($mata_pelajaran)) {
+        $errors[] = "Mata pelajaran harus diisi.";
+    }
+
+    if (!empty($errors)) {
+        return ['success' => false, 'errors' => $errors];
+    }
+
+    // Check if email already exists
+    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    if ($stmt->get_result()->num_rows > 0) {
+        $stmt->close();
+        return ['success' => false, 'errors' => ['Email sudah terdaftar.']];
+    }
+    $stmt->close();
+
+    // Hash password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert new guru
+    $stmt = $conn->prepare("INSERT INTO users (nama, email, password, role, mata_pelajaran, nomor_telepon, alamat_guru) VALUES (?, ?, ?, 'guru', ?, ?, ?)");
+    $stmt->bind_param("ssssss", $nama, $email, $hashed_password, $mata_pelajaran, $nomor_telepon, $alamat_guru);
+
+    if ($stmt->execute()) {
+        $stmt->close();
+        return ['success' => true];
+    } else {
+        $stmt->close();
+        return ['success' => false, 'errors' => ['Gagal mendaftarkan guru.']];
+    }
+}
+
+function get_teachers() {
+    global $conn;
+    $stmt = $conn->prepare("SELECT id, nama, email, mata_pelajaran, nomor_telepon, alamat_guru FROM users WHERE role = 'guru' ORDER BY nama");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $teachers = [];
+    while ($row = $result->fetch_assoc()) {
+        $teachers[] = $row;
+    }
+    $stmt->close();
+    return $teachers;
+}
+
+function get_teacher_profile($user_id) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT id, nama, email, role, mata_pelajaran, nomor_telepon, alamat_guru FROM users WHERE id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
+    return $user;
+}
+
+function update_teacher_profile($user_id, $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru) {
+    global $conn;
+    $stmt = $conn->prepare("UPDATE users SET nama = ?, email = ?, mata_pelajaran = ?, nomor_telepon = ?, alamat_guru = ? WHERE id = ?");
+    $stmt->bind_param("sssssi", $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru, $user_id);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
 }
 ?>

@@ -85,6 +85,32 @@ switch ($action) {
         }
         break;
 
+    case 'update_teacher_profile':
+        $nama = trim($_POST['nama'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $mata_pelajaran = trim($_POST['mata_pelajaran'] ?? '');
+        $nomor_telepon = trim($_POST['nomor_telepon'] ?? '');
+        $alamat_guru = trim($_POST['alamat_guru'] ?? '');
+
+        if (empty($nama) || empty($email)) {
+            echo json_encode(['success' => false, 'message' => 'Nama dan email harus diisi']);
+            exit();
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['success' => false, 'message' => 'Format email tidak valid']);
+            exit();
+        }
+
+        $user_id = $_SESSION['user_id'];
+        if (update_teacher_profile($user_id, $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru)) {
+            $_SESSION['user_name'] = $nama;
+            echo json_encode(['success' => true, 'message' => 'Profil berhasil diperbarui', 'user_name' => $nama]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Gagal memperbarui profil']);
+        }
+        break;
+
     default:
         echo json_encode(['success' => false, 'message' => 'Action tidak valid']);
         break;

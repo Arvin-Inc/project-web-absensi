@@ -1,4 +1,4 @@
-# Absensi Kelas
+![banner](https://capsule-render.vercel.app/api?type=wave&height=300&color=gradient&text=PROJECT&fontAlignY=40&desc=WEBSITE%20ABSENSI&descAlignY=54&descSize=27&descAlign=50)
 
 A web-based class attendance management system designed for schools to efficiently track student attendance. Built with PHP, MySQL, and Tailwind CSS, this system provides an intuitive interface for both teachers and students.
 
@@ -164,3 +164,5 @@ If you encounter any issues or have questions:
 ---
 
 **Note**: This application is designed for educational purposes and should be deployed in a secure environment for production use.
+
+![footer](https://capsule-render.vercel.app/api?type=wave&height=300&color=gradient&fontAlignY=40&descAlignY=54&descSize=27&descAlign=50&section=footer)

@@ -24,19 +24,7 @@ $attendance_error = '';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Dashboard Siswa - Absensi Kelas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#10B981'
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="css/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
 
@@ -52,7 +40,6 @@ $attendance_error = '';
             </svg>
          </button>
         <a href="index.php" class="flex ms-2 md:me-24">
-          <img src="##" class="h-8 me-3" alt="Absensi Kelas Logo" />
           <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Absensi Kelas</span>
         </a>
       </div>
@@ -62,7 +49,7 @@ $attendance_error = '';
               <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                 <span class="sr-only">Open user menu</span>
                 <?php if (!empty($user_profile['profile_photo'])): ?>
-                  <img class="w-8 h-8 rounded-full object-cover" src="../uploads/profile/<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil">
+                  <img class="w-8 h-8 rounded-full object-cover" src="../assets/uploads/profile_photos/<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil">
                 <?php else: ?>
                   <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
                     <span class="text-white text-sm font-medium"><?php echo substr($user_profile['nama'], 0, 1); ?></span>
@@ -116,7 +103,7 @@ $attendance_error = '';
                <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                   <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
                </svg>
-               <span class="flex-1 ms-3 whitespace-nowrap">Data Guru</span>
+               <span class="flex-1 ms-3 whitespace-nowrap">Daftar Guru</span>
             </a>
          </li>
          <li>
@@ -163,7 +150,7 @@ $attendance_error = '';
                     <input type="hidden" name="action" value="self_attendance">
                     <div class="mb-4">
                         <label for="status" class="block text-sm font-medium text-gray-700">Status Absensi</label>
-                        <select id="status" name="status" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                        <select id="status" name="status" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             <option value="Pilihan">--Pilih--</option>
                             <option value="Hadir">Hadir</option>
                             <option value="Izin">Izin</option>
@@ -188,10 +175,10 @@ $attendance_error = '';
                     <!-- Message section for Izin/Sakit -->
                     <div id="message-section" class="mb-4 hidden">
                         <label for="message" class="block text-sm font-medium text-gray-700">Pesan untuk Guru</label>
-                        <textarea id="message" name="message" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary" placeholder="Jelaskan alasan izin atau sakit..."></textarea>
+                        <textarea id="message" name="message" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Jelaskan alasan izin atau sakit..."></textarea>
                     </div>
 
-                    <button type="submit" name="self_attendance" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
+                    <button type="submit" name="self_attendance" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
                         Catat Absensi
                     </button>
                 </form>
@@ -212,8 +199,7 @@ $attendance_error = '';
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><?php echo date('d-m-Y', strtotime($report['tanggal'])); ?></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    <?php
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?php
                                     switch($report['status']) {
                                         case 'Hadir': echo 'bg-green-100 text-green-800'; break;
                                         case 'Izin': echo 'bg-yellow-100 text-yellow-800'; break;
@@ -229,7 +215,7 @@ $attendance_error = '';
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <?php if (!empty($report['selfie'])): ?>
-                                    <img src="../uploads/selfie/<?php echo htmlspecialchars($report['selfie']); ?>" alt="Selfie" class="h-16 w-16 object-cover rounded" />
+<img src="../assets/uploads/selfies/<?php echo htmlspecialchars($report['selfie']); ?>" alt="Selfie" class="h-16 w-16 object-cover rounded" />
                                 <?php else: ?>
                                     <span class="text-gray-400 italic">Tidak ada</span>
                                 <?php endif; ?>
@@ -265,29 +251,29 @@ $attendance_error = '';
                     <div class="mb-4">
                         <label for="nama" class="block text-sm font-medium text-gray-700">Nama</label>
                         <input type="text" id="nama" name="nama" value="<?php echo $user_profile['nama']; ?>" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div class="mb-4">
                         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                         <input type="email" id="email" name="email" value="<?php echo $user_profile['email']; ?>" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div class="mb-4">
                         <label for="nomor_siswa" class="block text-sm font-medium text-gray-700">Nomor Siswa</label>
                         <input type="text" id="nomor_siswa" name="nomor_siswa" value="<?php echo htmlspecialchars($user_profile['nomor_siswa'] ?? ''); ?>"
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div class="mb-4">
                         <label for="alamat" class="block text-sm font-medium text-gray-700">Alamat</label>
                         <textarea id="alamat" name="alamat" rows="3"
-                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"><?php echo htmlspecialchars($user_profile['alamat'] ?? ''); ?></textarea>
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"><?php echo htmlspecialchars($user_profile['alamat'] ?? ''); ?></textarea>
                     </div>
                     <div class="mb-4">
                         <label for="profile_photo" class="block text-sm font-medium text-gray-700">Foto Profil</label>
                         <div class="flex items-center space-x-4">
                             <div class="flex-shrink-0">
                                 <?php if (!empty($user_profile['profile_photo'])): ?>
-                                    <img src="../uploads/profile/<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil" class="w-16 h-16 object-cover rounded-full border">
+<img src="../assets/uploads/profile_photos/<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil" class="w-16 h-16 object-cover rounded-full border">
                                 <?php else: ?>
                                     <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
                                         <span class="text-gray-500 text-sm">No Photo</span>
@@ -295,12 +281,12 @@ $attendance_error = '';
                                 <?php endif; ?>
                             </div>
                             <div class="flex-1">
-                                <input type="file" id="profile_photo" name="profile_photo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                                <input type="file" id="profile_photo" name="profile_photo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <p class="text-sm text-gray-500 mt-1">Pilih file gambar (JPG, PNG, GIF) maksimal 2MB</p>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" name="update_profile" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
+                    <button type="submit" name="update_profile" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
                         Simpan Perubahan
                     </button>
                 </form>
@@ -309,7 +295,7 @@ $attendance_error = '';
 
         <!-- Teachers Tab -->
         <div id="teachers-tab" class="tab-content hidden">
-            <h2 class="text-2xl font-bold mb-4">Data Guru</h2>
+            <h2 class="text-2xl font-bold mb-4">Daftar Guru</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php foreach ($teachers as $teacher): ?>
                     <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">

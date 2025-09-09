@@ -50,19 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Dashboard Guru - Absensi Kelas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#10B981'
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="css/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
 
@@ -77,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
             </svg>
          </button>
         <a href="index.php" class="flex ms-2 md:me-24">
-          <img src="##" class="h-8 me-3" alt="Absensi Kelas Logo" />
           <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Absensi Kelas</span>
         </a>
       </div>
@@ -87,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
               <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                 <span class="sr-only">Open user menu</span>
                 <?php if (!empty($user_profile['profile_photo'])): ?>
-                  <img class="w-8 h-8 rounded-full" src="<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="user photo">
+                  <img class="w-8 h-8 rounded-full" src="../assets/uploads/profile_photos/<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="user photo">
                 <?php else: ?>
                   <img class="w-8 h-8 rounded-full" src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['user_name']); ?>" alt="user photo">
                 <?php endif; ?>
@@ -107,13 +94,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                   <a href="#" onclick="showTab('students', this)" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</a>
                 </li>
                 <li>
-                  <a href="#" onclick="showTab('attendance', this)" class="flex items-center p-2 text-sm text-gray-700 rounded-lg dark:text-white hover:bg-primary dark:hover:bg-gray-700 group tab-button">
+                <a href="#" onclick="showTab('attendance', this)" class="flex items-center p-2 text-sm text-gray-700 rounded-lg dark:text-white hover:bg-blue-500 dark:hover:bg-gray-700 group tab-button">
 
                    <span class="flex-1 ms-3 whitespace-nowrap">Absensi Hari Ini</span>
                 </a>
                 </li>
                 <li>
-                   <a href="#" onclick="showTab('input-absensi', this)" class="flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-primary dark:hover:bg-gray-700 group tab-button">
+                   <a href="#" onclick="showTab('input-absensi', this)" class="flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-blue-500 dark:hover:bg-gray-700 group tab-button">
                       <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                          <path d="M9 1.001 10 2l-1 1v7.068a6.99 6.99 0 0 1 2.623.171l.092.03.03.092A6.984 6.984 0 0 1 12 11.999v1.068l.962-.962 1.847 1.848L14.962 15H15v.062l.962.962-1.847 1.848L12 16.931v-1.068a6.984 6.984 0 0 1-1.93-.696l-.092-.03-.03-.092A6.99 6.99 0 0 1 8 10.068V3L7 2l1-1ZM4 4v6a4 4 0 0 0 4 4v2a6 6 0 0 1-6-6V4h2Z"/>
                       </svg>
@@ -121,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                    </a>
                 </li>
                 <li>
-                   <a href="#" onclick="showTab('kelola-kelas', this)" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-primary dark:hover:bg-gray-700 group tab-button">
+                   <a href="#" onclick="showTab('kelola-kelas', this)" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-blue-500 dark:hover:bg-gray-700 group tab-button">
                       <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                          <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z"/>
                       </svg>
@@ -129,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                    </a>
                 </li>
                 <li>
-                   <a href="#" onclick="showTab('reports', this)" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-primary dark:hover:bg-gray-700 group tab-button">
+                   <a href="#" onclick="showTab('reports', this)" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-blue-500 dark:hover:bg-gray-700 group tab-button">
                       <svg class="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                          <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
                       </svg>
@@ -337,7 +324,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                                 </div>
                                 <?php if (!empty($record['selfie'])): ?>
                                     <div class="flex-shrink-0">
-                                        <img src="<?php echo htmlspecialchars($record['selfie']); ?>" alt="Selfie" class="w-16 h-16 object-cover rounded-lg border">
+                                        <img src="../assets/uploads/selfies/<?php echo htmlspecialchars($record['selfie']); ?>" alt="Selfie" class="w-16 h-16 object-cover rounded-lg border">
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -497,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                                 </div>
                                 <?php if (!empty($report['selfie'])): ?>
                                     <div class="flex-shrink-0">
-                                        <img src="<?php echo htmlspecialchars($report['selfie']); ?>" alt="Selfie" class="w-16 h-16 object-cover rounded-lg border">
+                                        <img src="../assets/uploads/selfies/<?php echo htmlspecialchars($report['selfie']); ?>" alt="Selfie" class="w-16 h-16 object-cover rounded-lg border">
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -545,7 +532,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                             <div class="flex items-center space-x-4">
                                 <div class="flex-shrink-0">
                                     <?php if (!empty($teacher_profile['profile_photo'])): ?>
-                                        <img src="<?php echo htmlspecialchars($teacher_profile['profile_photo']); ?>" alt="Foto Profil" class="w-16 h-16 object-cover rounded-full border">
+                                        <img src="../assets/uploads/profile_photos/<?php echo htmlspecialchars($teacher_profile['profile_photo']); ?>" alt="Foto Profil" class="w-16 h-16 object-cover rounded-full border">
                                     <?php else: ?>
                                         <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
                                             <span class="text-gray-500 text-sm">No Photo</span>

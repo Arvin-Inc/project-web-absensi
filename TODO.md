@@ -1,12 +1,21 @@
-# TODO: Display Uploaded Profile Photos on Teacher and Student Dashboards
+# TODO: Replace Custom Primary/Secondary Classes with Standard Tailwind Classes
 
-## Completed Tasks
-- [x] Updated `get_teacher_profile` function to include `profile_photo` in the query
-- [x] Updated `update_teacher_profile` function to accept and update `profile_photo`
-- [x] Updated `ajax_handler_guru.php` to handle profile photo upload in the `update_teacher_profile` case
-- [x] Verified that the profile tab in `dashboard_guru.php` displays the current profile photo
+## Files to Update:
+- [x] public/index.php
+- [x] public/register.php
+- [x] public/register_guru.php
+- [x] public/login.php
+- [ ] public/dashboard_siswa.php
+- [ ] public/dashboard_guru.php
 
-## Next Steps
-- [x] Ensure the upload directory exists and has proper permissions
-- [ ] Test the profile photo upload functionality for teachers
-- [ ] Verify that uploaded photos are displayed in the navbar and profile tab
+## Replacements Needed:
+- `bg-primary` → `bg-blue-500`
+- `text-primary` → `text-blue-500`
+- `border-primary` → `border-blue-500`
+- `focus:ring-primary` → `focus:ring-blue-500`
+- `focus:border-primary` → `focus:border-blue-500`
+- `bg-secondary` → `bg-emerald-500`
+- `from-primary` → `from-blue-500`
+- `to-secondary` → `to-emerald-500`
+- `hover:bg-primary` → `hover:bg-blue-500`
+- `hover:text-primary` → `hover:text-blue-500`

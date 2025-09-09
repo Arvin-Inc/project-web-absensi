@@ -62,3 +62,11 @@
 
 [2025-09-09 09:34:30] [LOGIN_SUCCESS] [User: 4] [IP: ::1] [UA: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome] User logged in successfully: vivo1817y@gmail.com - 
 
+[2025-09-09 10:02:17] [LOGIN_SUCCESS] [User: 5] [IP: ::1] [UA: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome] User logged in successfully: arfienade7@gmail.com - 
+
+[2025-09-09 10:03:11] [LOGIN_SUCCESS] [User: 4] [IP: ::1] [UA: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome] User logged in successfully: vivo1817y@gmail.com - 
+
+[2025-09-09 10:25:28] [LOGIN_FAILED] [User: guest] [IP: ::1] [UA: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome] Invalid password for: arfienade7@gmail.com - 
+
+[2025-09-09 10:25:33] [LOGIN_SUCCESS] [User: 5] [IP: ::1] [UA: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome] User logged in successfully: arfienade7@gmail.com - 
+

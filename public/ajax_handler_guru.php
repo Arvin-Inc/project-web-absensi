@@ -91,6 +91,7 @@ switch ($action) {
         $mata_pelajaran = trim($_POST['mata_pelajaran'] ?? '');
         $nomor_telepon = trim($_POST['nomor_telepon'] ?? '');
         $alamat_guru = trim($_POST['alamat_guru'] ?? '');
+        $profile_photo_path = null;
 
         if (empty($nama) || empty($email)) {
             echo json_encode(['success' => false, 'message' => 'Nama dan email harus diisi']);
@@ -102,8 +103,46 @@ switch ($action) {
             exit();
         }
 
+        // Handle profile photo upload
+        if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES['profile_photo'];
+            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+            $max_size = 2 * 1024 * 1024; // 2MB
+
+            // Validate file type
+            if (!in_array($file['type'], $allowed_types)) {
+                echo json_encode(['success' => false, 'message' => 'Tipe file tidak didukung. Gunakan JPG, PNG, atau GIF.']);
+                exit();
+            }
+
+            // Validate file size
+            if ($file['size'] > $max_size) {
+                echo json_encode(['success' => false, 'message' => 'Ukuran file terlalu besar. Maksimal 2MB.']);
+                exit();
+            }
+
+            // Create uploads directory if it doesn't exist
+            $upload_dir = '../assets/uploads/profile_photos/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+
+            // Generate unique filename
+            $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = 'profile_' . $user_id . '_' . time() . '.' . $file_extension;
+            $file_path = $upload_dir . $filename;
+
+            // Move uploaded file
+            if (move_uploaded_file($file['tmp_name'], $file_path)) {
+                $profile_photo_path = 'assets/uploads/profile_photos/' . $filename;
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Gagal mengupload foto profil']);
+                exit();
+            }
+        }
+
         $user_id = $_SESSION['user_id'];
-        if (update_teacher_profile($user_id, $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru)) {
+        if (update_teacher_profile($user_id, $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru, $profile_photo_path)) {
             $_SESSION['user_name'] = $nama;
             echo json_encode(['success' => true, 'message' => 'Profil berhasil diperbarui', 'user_name' => $nama]);
         } else {

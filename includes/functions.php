@@ -359,7 +359,7 @@ function get_teachers() {
 
 function get_teacher_profile($user_id) {
     global $conn;
-    $stmt = $conn->prepare("SELECT id, nama, email, role, mata_pelajaran, nomor_telepon, alamat_guru FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, nama, email, role, mata_pelajaran, nomor_telepon, alamat_guru, profile_photo FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -368,10 +368,10 @@ function get_teacher_profile($user_id) {
     return $user;
 }
 
-function update_teacher_profile($user_id, $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru) {
+function update_teacher_profile($user_id, $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru, $profile_photo = null) {
     global $conn;
-    $stmt = $conn->prepare("UPDATE users SET nama = ?, email = ?, mata_pelajaran = ?, nomor_telepon = ?, alamat_guru = ? WHERE id = ?");
-    $stmt->bind_param("sssssi", $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru, $user_id);
+    $stmt = $conn->prepare("UPDATE users SET nama = ?, email = ?, mata_pelajaran = ?, nomor_telepon = ?, alamat_guru = ?, profile_photo = ? WHERE id = ?");
+    $stmt->bind_param("ssssssi", $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru, $profile_photo, $user_id);
     $result = $stmt->execute();
     $stmt->close();
     return $result;

@@ -20,11 +20,12 @@ Options -Indexes
     Require all denied
 </FilesMatch>
 
-# Prevent hotlinking
+# Prevent hotlinking (allow local development and empty referer)
 RewriteEngine on
-RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^$ [NC]
 RewriteCond %{HTTP_REFERER} !^https?://(www\.)?localhost [NC]
 RewriteCond %{HTTP_REFERER} !^https?://(www\.)?127\.0\.0\.1 [NC]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ [NC]  # Allow IP addresses
 RewriteCond %{REQUEST_FILENAME} \.(jpg|jpeg|png|gif|css|js)$ [NC]
 RewriteRule . - [F,L]
 

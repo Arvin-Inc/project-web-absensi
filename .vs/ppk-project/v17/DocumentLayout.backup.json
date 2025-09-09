@@ -34,7 +34,8 @@
               "RelativeToolTip": "public\\dashboard_guru.php",
               "ViewState": "AgIAAJIBAAAAAAAAAABCwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2025-09-07T01:41:04.305Z"
+              "WhenOpened": "2025-09-07T01:41:04.305Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -44,7 +45,7 @@
               "RelativeDocumentMoniker": "public\\dashboard_siswa.php",
               "ToolTip": "C:\\xampp\\htdocs\\ppk-project\\public\\dashboard_siswa.php",
               "RelativeToolTip": "public\\dashboard_siswa.php",
-              "ViewState": "AgIAAEICAAAAAAAAAAAEwFICAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAIAAAAAAAAAAAAAAAJQAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
               "WhenOpened": "2025-09-07T01:36:15.735Z",
               "EditorCaption": ""

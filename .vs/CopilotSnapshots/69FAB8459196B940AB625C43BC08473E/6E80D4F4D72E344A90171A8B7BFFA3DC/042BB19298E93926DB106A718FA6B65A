@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
@@ -228,8 +228,8 @@ $attendance_error = '';
                                 <?php echo htmlspecialchars($report['message'] ?? ''); ?>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <?php if (!empty($report['selfie'])): ?>
-                                    <img src="../uploads/selfie/<?php echo htmlspecialchars($report['selfie']); ?>" alt="Selfie" class="h-16 w-16 object-cover rounded" />
+                                <?php if ($report['selfie']): ?>
+                                    <img src="../<?php echo $report['selfie']; ?>" alt="Selfie" class="h-16 w-16 object-cover rounded" />
                                 <?php else: ?>
                                     <span class="text-gray-400 italic">Tidak ada</span>
                                 <?php endif; ?>

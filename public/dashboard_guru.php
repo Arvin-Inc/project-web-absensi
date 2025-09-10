@@ -440,7 +440,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
             <form method="POST" class="mb-4">
                 <label for="class_name" class="block mb-2 font-medium text-gray-700">Nama Kelas Baru:</label>
                 <input type="text" id="class_name" name="class_name" class="border border-gray-300 rounded px-3 py-2 w-64" required>
-                <button type="submit" name="add_class" class="ml-2 bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">Tambah Kelas</button>
+                <button type="submit" name="add_class" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah Kelas</button>
             </form>
             <div class="bg-white shadow overflow-hidden sm:rounded-md">
                 <ul class="divide-y divide-gray-200">
@@ -555,7 +555,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_attendance'])) {
                         </div>
                     </div>
                     <div class="mt-6">
-                        <button type="submit" class="bg-primary text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                             Simpan Perubahan
                         </button>
                     </div>

@@ -43,3 +43,12 @@ RewriteRule ^public/assets/(.*)$ assets/$1 [L]
     ExpiresByType image/x-icon "access plus 1 month"
     ExpiresDefault "access plus 2 days"
 </IfModule>
+
+# Custom error pages
+ErrorDocument 400 /ppk-project/public/404.php
+ErrorDocument 401 /ppk-project/public/404.php
+ErrorDocument 403 /ppk-project/public/404.php
+ErrorDocument 404 /ppk-project/public/404.php
+ErrorDocument 500 /ppk-project/public/404.php
+ErrorDocument 502 /ppk-project/public/404.php
+ErrorDocument 503 /ppk-project/public/404.php

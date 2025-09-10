@@ -143,7 +143,7 @@ ppk-project/
 
 ## Collaborators
 
-- **Arvin**  
+- **Arfi**  
   - Instagram: [arvin_iinc](https://www.instagram.com/arvin_iinc/)  
   - GitHub: [Arvin-Inc](https://github.com/Arvin-Inc/)
 
@@ -151,11 +151,11 @@ ppk-project/
   - Instagram: [rapyy4](https://www.instagram.com/rapyy4?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==)  
   - GitHub: [Rafy-r](https://github.com/Rafy-r)
 
-- **R4thar**  
+- **Athar**  
   - Instagram: [r.4thar](https://www.instagram.com/r.4thar/)  
   - GitHub: Not provided
 
-- **Crbatti**  
+- **Ranu**  
   - Instagram: Not provided  
   - GitHub: [crbatti08-bot](https://github.com/crbatti08-bot)
 

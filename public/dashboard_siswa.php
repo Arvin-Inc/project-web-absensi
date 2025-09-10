@@ -49,7 +49,7 @@ $attendance_error = '';
               <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                 <span class="sr-only">Open user menu</span>
                 <?php if (!empty($user_profile['profile_photo'])): ?>
-                  <img class="w-8 h-8 rounded-full object-cover" src="../assets/uploads/profile_photos/<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil">
+                  <img class="w-8 h-8 rounded-full object-cover" src="../<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil">
                 <?php else: ?>
                   <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
                     <span class="text-white text-sm font-medium"><?php echo substr($user_profile['nama'], 0, 1); ?></span>
@@ -273,7 +273,7 @@ $attendance_error = '';
                         <div class="flex items-center space-x-4">
                             <div class="flex-shrink-0">
                                 <?php if (!empty($user_profile['profile_photo'])): ?>
-<img src="../assets/uploads/profile_photos/<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil" class="w-16 h-16 object-cover rounded-full border">
+<img src="../<?php echo htmlspecialchars($user_profile['profile_photo']); ?>" alt="Foto Profil" class="w-16 h-16 object-cover rounded-full border">
                                 <?php else: ?>
                                     <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
                                         <span class="text-gray-500 text-sm">No Photo</span>
@@ -302,9 +302,13 @@ $attendance_error = '';
                         <div class="bg-gradient-to-r from-primary to-blue-600 p-4">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                                        <span class="text-white font-bold text-lg"><?php echo substr($teacher['nama'], 0, 1); ?></span>
-                                    </div>
+                                    <?php if (!empty($teacher['profile_photo'])): ?>
+                                        <img src="../<?php echo htmlspecialchars($teacher['profile_photo']); ?>" alt="Foto Profil" class="w-12 h-12 rounded-full object-cover" />
+                                    <?php else: ?>
+                                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                            <span class="text-white font-bold text-lg"><?php echo substr($teacher['nama'], 0, 1); ?></span>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="ml-4">
                                     <h3 class="text-lg font-semibold text-white"><?php echo htmlspecialchars($teacher['nama']); ?></h3>

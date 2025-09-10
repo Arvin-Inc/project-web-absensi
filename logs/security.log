@@ -84,3 +84,25 @@
 
 [2025-09-09 15:00:49] [LOGIN_SUCCESS] [User: 5] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome] User logged in successfully: arfienade7@gmail.com - 
 
+[2025-09-10 10:45:10] [LOGIN_SUCCESS] [User: 5] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: arfienade7@gmail.com - 
+
+[2025-09-10 10:45:52] [LOGIN_SUCCESS] [User: 4] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: vivo1817y@gmail.com - 
+
+[2025-09-10 10:57:00] [LOGIN_SUCCESS] [User: 4] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: vivo1817y@gmail.com - 
+
+[2025-09-10 11:14:45] [LOGIN_SUCCESS] [User: 5] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: arfienade7@gmail.com - 
+
+[2025-09-10 11:15:05] [LOGIN_FAILED] [User: guest] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] Invalid password for: vivo1817y@gmail.com - 
+
+[2025-09-10 11:15:09] [LOGIN_SUCCESS] [User: 4] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: vivo1817y@gmail.com - 
+
+[2025-09-10 11:22:40] [LOGIN_SUCCESS] [User: 5] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: arfienade7@gmail.com - 
+
+[2025-09-10 11:23:20] [LOGIN_SUCCESS] [User: 4] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: vivo1817y@gmail.com - 
+
+[2025-09-10 11:23:44] [LOGIN_SUCCESS] [User: 5] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: arfienade7@gmail.com - 
+
+[2025-09-10 11:23:59] [LOGIN_FAILED] [User: guest] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] Invalid password for: vivo1817y@gmail.com - 
+
+[2025-09-10 11:24:07] [LOGIN_SUCCESS] [User: 4] [IP: 127.0.0.1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Sa] User logged in successfully: vivo1817y@gmail.com - 
+

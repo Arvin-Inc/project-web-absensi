@@ -3,7 +3,7 @@ require_once '../config/db.php';
 
 function get_students($kelas_id = null) {
     global $conn;
-    $query = "SELECT u.id, u.nama, u.email, u.nomor_siswa, u.alamat, k.nama as kelas FROM users u LEFT JOIN kelas k ON u.kelas_id = k.id WHERE u.role = 'siswa'";
+    $query = "SELECT u.id, u.nama, u.email, u.nomor_siswa, u.alamat, u.profile_photo, k.nama as kelas FROM users u LEFT JOIN kelas k ON u.kelas_id = k.id WHERE u.role = 'siswa'";
     $params = [];
     $types = "";
 
@@ -346,7 +346,7 @@ function register_guru($nama, $email, $password, $mata_pelajaran, $nomor_telepon
 
 function get_teachers() {
     global $conn;
-    $stmt = $conn->prepare("SELECT id, nama, email, mata_pelajaran, nomor_telepon, alamat_guru FROM users WHERE role = 'guru' ORDER BY nama");
+    $stmt = $conn->prepare("SELECT id, nama, email, mata_pelajaran, nomor_telepon, alamat_guru, profile_photo FROM users WHERE role = 'guru' ORDER BY nama");
     $stmt->execute();
     $result = $stmt->get_result();
     $teachers = [];

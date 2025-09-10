@@ -86,6 +86,7 @@ switch ($action) {
         break;
 
     case 'update_teacher_profile':
+        $user_id = $_SESSION['user_id'];
         $nama = trim($_POST['nama'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $mata_pelajaran = trim($_POST['mata_pelajaran'] ?? '');
@@ -139,9 +140,12 @@ switch ($action) {
                 echo json_encode(['success' => false, 'message' => 'Gagal mengupload foto profil']);
                 exit();
             }
+        } else {
+            // If no new photo uploaded, keep the existing one
+            $current_profile = get_teacher_profile($user_id);
+            $profile_photo_path = $current_profile['profile_photo'];
         }
 
-        $user_id = $_SESSION['user_id'];
         if (update_teacher_profile($user_id, $nama, $email, $mata_pelajaran, $nomor_telepon, $alamat_guru, $profile_photo_path)) {
             $_SESSION['user_name'] = $nama;
             echo json_encode(['success' => true, 'message' => 'Profil berhasil diperbarui', 'user_name' => $nama]);

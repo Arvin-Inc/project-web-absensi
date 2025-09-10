@@ -148,7 +148,7 @@ function send_security_headers() {
     header("Referrer-Policy: strict-origin-when-cross-origin");
 
     // Content Security Policy (basic)
-    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com;");
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: http: https: https://ui-avatars.com; font-src 'self' https://fonts.gstatic.com;");
 
     // HSTS (uncomment when HTTPS is enabled)
     // header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");

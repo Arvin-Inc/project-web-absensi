@@ -16,11 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $nama = sanitize_input($_POST['nama']);
         $email = sanitize_input($_POST['email']);
         $password = sanitize_input($_POST['password']);
-        $role = sanitize_input($_POST['role']);
+        $role = 'siswa';
         $kelas_id = sanitize_input($_POST['kelas_id']);
-        if ($role == 'guru') {
-            $kelas_id = null;
-        }
         $nomor_siswa = isset($_POST['nomor_siswa']) ? sanitize_input($_POST['nomor_siswa']) : null;
         $alamat = isset($_POST['alamat']) ? sanitize_input($_POST['alamat']) : null;
 
@@ -88,15 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                            placeholder="Password (min 6 karakter)">
                 </div>
                 <div>
-                    <label for="role" class="sr-only">Role</label>
-                    <select id="role" name="role" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm">
-                        <option value="">Pilih Role</option>
-                        <option value="guru">Guru</option>
-                        <option value="siswa">Siswa</option>
-                    </select>
-                </div>
-                <div>
                     <label for="kelas_id" class="sr-only">Kelas</label>
                     <select id="kelas_id" name="kelas_id" required
                             class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm">
@@ -106,16 +94,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div id="student-fields" style="display: none;">
+                <div id="student-fields">
                     <div>
                         <label for="nomor_siswa" class="sr-only">Nomor Siswa</label>
-                        <input id="nomor_siswa" name="nomor_siswa" type="text"
+                        <input id="nomor_siswa" name="nomor_siswa" type="text" required
                                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                placeholder="Nomor Siswa">
                     </div>
                     <div>
                         <label for="alamat" class="sr-only">Alamat</label>
-                        <textarea id="alamat" name="alamat" rows="3"
+                        <textarea id="alamat" name="alamat" rows="3" required
                                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                   placeholder="Alamat"></textarea>
                     </div>
@@ -133,39 +121,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 
-<script>
-    function toggleFields() {
-        const roleSelect = document.getElementById('role');
-        const studentFields = document.getElementById('student-fields');
-        const kelasSelect = document.getElementById('kelas_id');
-        const nomorSiswa = document.getElementById('nomor_siswa');
-        const alamat = document.getElementById('alamat');
 
-        if (roleSelect.value === 'siswa') {
-            studentFields.style.display = 'block';
-            nomorSiswa.required = true;
-            alamat.required = true;
-            kelasSelect.style.display = 'block';
-            kelasSelect.required = true;
-        } else if (roleSelect.value === 'guru') {
-            studentFields.style.display = 'none';
-            nomorSiswa.required = false;
-            alamat.required = false;
-            kelasSelect.style.display = 'none';
-            kelasSelect.required = false;
-        } else {
-            studentFields.style.display = 'none';
-            nomorSiswa.required = false;
-            alamat.required = false;
-            kelasSelect.style.display = 'block';
-            kelasSelect.required = true;
-        }
-    }
-
-    document.getElementById('role').addEventListener('change', toggleFields);
-
-    // Initialize on page load
-    window.addEventListener('DOMContentLoaded', toggleFields);
-</script>
 </body>
 </html>
